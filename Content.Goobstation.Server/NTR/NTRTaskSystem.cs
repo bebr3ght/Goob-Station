@@ -26,6 +26,7 @@ using Content.Shared.FixedPoint;
 using Content.Shared.IdentityManagement;
 using Content.Shared.NameIdentifier;
 using Content.Shared.Paper;
+using Content.Shared.Store;
 using Content.Shared.Store.Components;
 using Content.Shared.Tag;
 using JetBrains.Annotations;
@@ -54,6 +55,7 @@ public sealed class NtrTaskSystem : EntitySystem
     [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
     [Dependency] private readonly ILocalizationManager _loc = default!;
+    [Dependency] private readonly UserInterfaceSystem _ui = default!;
 
     private readonly ProtoId<NameIdentifierGroupPrototype> _nameIdentifierGroup = "Task";
 
@@ -73,8 +75,6 @@ public sealed class NtrTaskSystem : EntitySystem
         SubscribeLocalEvent<NtrTaskConsoleComponent, TaskCompletedEvent>(OnTaskCompleted);
 
         SubscribeLocalEvent<NtrTaskConsoleComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);
-
-        // SubscribeLocalEvent<DocumentInsertedEvent>(OnDocumentInserted);
     }
 
     private void OnPurchase(EntityUid uid, NtrClientAccountComponent component, NtrListingPurchaseEvent args)
@@ -460,11 +460,9 @@ public sealed class NtrTaskSystem : EntitySystem
         // go negative, so yeah... shitcod
         var newBalance = Math.Max(0, args.Balance);
 
-        Log.Debug($"Old storeComp.Balance = {storeComp.Balance.First().Value.Value}; args.Balance = {args.Balance}");
         storeComp.Balance["NTLoyaltyPoint"] = FixedPoint2.New(newBalance);
-        Log.Debug($"New storeComp.Balance = {storeComp.Balance.First().Value.Value}");
         Dirty(uid, storeComp);
-        Log.Debug($"Check {storeComp.Balance.First().Value.Value}");
+        UpdateStore();
     }
     private void OnOpened(EntityUid uid, NtrTaskConsoleComponent component, BoundUIOpenedEvent args)
     {
@@ -701,6 +699,16 @@ public sealed class NtrTaskSystem : EntitySystem
                 provider.ActiveTaskIds
             );
             _uiSystem.SetUiState((uid, ui), NtrTaskUiKey.Key, state);
+        }
+    }
+
+    private void UpdateStore()
+    {
+        var query = EntityQueryEnumerator<StoreComponent, NtrClientAccountComponent>();
+        while (query.MoveNext(out var uid, out var store, out _))
+        {
+            var state = new StoreUpdateState(store.LastAvailableListings, store.Balance, false, store.RefundAllowed);
+            _ui.SetUiState(uid, StoreUiKey.Key, state);
         }
     }
     private void OnTaskFailed(EntityUid uid, NtrTaskConsoleComponent component, TaskFailedEvent args)

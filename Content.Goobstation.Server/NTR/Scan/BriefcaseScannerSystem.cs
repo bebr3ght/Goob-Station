@@ -4,9 +4,12 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Content.Goobstation.Common.NTR;
 using Content.Goobstation.Common.NTR.Scan;
+using Content.Goobstation.Shared.NTR;
 using Content.Goobstation.Shared.NTR.Scan;
 using Content.Server.Chat.Systems;
+using Content.Server.Station.Systems;
 using Content.Server.Store.Systems;
 using Content.Shared.DoAfter;
 using Content.Shared.FixedPoint;
@@ -14,6 +17,7 @@ using Content.Shared.Interaction;
 using Content.Shared.Mind;
 using Content.Shared.Popups;
 using Content.Shared.Store.Components;
+using Robust.Server.GameObjects;
 
 namespace Content.Goobstation.Server.NTR.Scan
 {
@@ -24,6 +28,8 @@ namespace Content.Goobstation.Server.NTR.Scan
         [Dependency] private readonly SharedMindSystem _mind = default!;
         [Dependency] private readonly SharedPopupSystem _popup = default!;
         [Dependency] private readonly ChatSystem _chatManager = default!;
+        [Dependency] private readonly StationSystem _station = default!;
+        [Dependency] private readonly UserInterfaceSystem _ui = default!;
 
         public override void Initialize()
         {
@@ -74,7 +80,6 @@ namespace Content.Goobstation.Server.NTR.Scan
             if (!TryComp<ScannableForPointsComponent>(target, out var scannable) || scannable.AlreadyScanned)
                 return;
             scannable.AlreadyScanned = true;
-            //Dirty(target, scannable);
             if (TryComp<StoreComponent>(uid, out var store) && store.CurrencyWhitelist.Contains("NTLoyaltyPoint"))
             {
                 var points = scannable.Points;
@@ -84,12 +89,20 @@ namespace Content.Goobstation.Server.NTR.Scan
                 }
                 else
                 {
-                    _storeSystem.TryAddCurrency(new Dictionary<string, FixedPoint2>
+                    if (_station.GetOwningStation(uid) is not { } station ||
+                        !TryComp<NtrTaskDatabaseComponent>(station, out _))
+                        return;
+                    if (!TryComp<NtrBankAccountComponent>(station, out var ntrAccount))
+                        return;
+                    ntrAccount.Balance += points;
+                    var query = EntityQueryEnumerator<NtrClientAccountComponent>();
+                    while (query.MoveNext(out var client, out _))
                     {
-                        { "NTLoyaltyPoint", FixedPoint2.New(points) }
-                    },
-                    uid,
-                    store);
+                        var balanceEv = new NtrAccountBalanceUpdatedEvent(client, ntrAccount.Balance);
+                        RaiseLocalEvent(client, balanceEv);
+                    }
+
+                    Dirty(uid, store);
                     _chatManager.TrySendInGameICMessage(uid, Loc.GetString("ntr-scan-success", ("amount", points)), InGameICChatType.Speak, true);
 
                     QueueDel(target);

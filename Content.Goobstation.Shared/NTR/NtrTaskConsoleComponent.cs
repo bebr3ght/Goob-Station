@@ -42,16 +42,22 @@ public sealed partial class NtrTaskConsoleComponent : Component
     public TimeSpan NextPrintTime = TimeSpan.Zero;
 
     /// <summary>
+    /// The time at which the console will be able to make sound again.
+    /// </summary>
+    [DataField]
+    public TimeSpan NextSoundTime = TimeSpan.Zero;
+
+    /// <summary>
     /// The id of the label entity spawned by the print label button.
     /// </summary>
     [DataField]
     public string TaskLabelId = "Paper";
 
     /// <summary>
-    /// The time between prints.
+    /// The time between various triggeable things.
     /// </summary>
     [DataField]
-    public TimeSpan PrintDelay = TimeSpan.FromSeconds(5);
+    public TimeSpan Delay = TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// The sound made when printing occurs

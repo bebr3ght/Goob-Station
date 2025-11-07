@@ -21,6 +21,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using System.Diagnostics.CodeAnalysis;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Ghost.Roles.Components
@@ -33,6 +34,44 @@ namespace Content.Shared.Ghost.Roles.Components
     {
         [DataField]
         public bool DeleteOnSpawn = true;
+
+        [DataField]
+        public bool Repeatable
+        {
+            get => !DeleteOnSpawn;
+            set => DeleteOnSpawn = !value;
+        }
+
+        /// <summary>
+        ///     Cooldown time before the ghost role can be spawned again.
+        ///     Required when Repeatable is true (DeleteOnSpawn is false).
+        /// </summary>
+        [DataField]
+        public float? RepeatCooldown;
+
+
+        /// <summary>
+        /// Validates that RepeatCooldown is set when Repeatable is true.
+        /// </summary>
+        [MemberNotNullWhen(true, nameof(RepeatCooldown))]
+        public bool ValidateRepeatCooldown()
+        {
+            if (Repeatable && RepeatCooldown == null)
+                return false;
+
+            RepeatCooldown ??= 0f;
+
+            return true;
+        }
+
+        [DataField]
+        public bool AlreadySummoned;
+
+        /// <summary>
+        /// The specific creature this summoned, if the SpecialItemPrototype has a mobstate.
+        /// </summary>
+        [ViewVariables]
+        public EntityUid? Summon = null;
 
         [DataField]
         public int AvailableTakeovers = 1;
@@ -48,5 +87,8 @@ namespace Content.Shared.Ghost.Roles.Components
         /// </summary>
         [DataField]
         public List<string> SelectablePrototypes = [];
+
+        [DataField("requiredComponents")]
+        public List<ComponentRegistry> RequiredComponents = [];
     }
 }

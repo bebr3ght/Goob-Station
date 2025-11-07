@@ -14,9 +14,15 @@ namespace Content.Shared.Bible.Components
     public sealed partial class FamiliarComponent : Component
     {
         /// <summary>
-        /// The entity this familiar was summoned from.
+        /// The item this familiar was summoned from.
         /// </summary>
         [ViewVariables]
-        public EntityUid? Source = null;
+        public EntityUid? SpawnedFromItem = null;
+
+        /// <summary>
+        /// The mob this familiar attached to.
+        /// </summary>
+        [ViewVariables]
+        public EntityUid? SpawnedFromCreature = null;
     }
 }

@@ -74,9 +74,11 @@ using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 using Content.Server.Popups;
+using Content.Shared.Bible.Components;
 using Content.Shared.Verbs;
 using Robust.Shared.Collections;
 using Content.Shared.Ghost.Roles.Components;
+using Content.Shared.Popups;
 
 namespace Content.Server.Ghost.Roles;
 
@@ -133,6 +135,16 @@ public sealed class GhostRoleSystem : EntitySystem
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GetVerbsEvent<Verb>>(OnVerb);
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GhostRoleRadioMessage>(OnGhostRoleRadioMessage);
         _playerManager.PlayerStatusChanged += PlayerStatusChanged;
+
+        SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GetVerbsEvent<AlternativeVerb>>(AddVerb);
+        SubscribeLocalEvent<RepeatSpawnCooldownComponent, ComponentInit>(OnRepeatInit);
+    }
+
+    private void OnRepeatInit(EntityUid uid, RepeatSpawnCooldownComponent component, ComponentInit args)
+    {
+        if (!TryComp<GhostRoleMobSpawnerComponent>(uid, out var spawner))
+            return;
+        component.RepeatCooldown = spawner.RepeatCooldown;
     }
 
     private void OnMobStateChanged(Entity<GhostTakeoverAvailableComponent> component, ref MobStateChangedEvent args)
@@ -230,6 +242,29 @@ public sealed class GhostRoleSystem : EntitySystem
 
         UpdateGhostRoleCount();
         UpdateRaffles(frameTime);
+
+        var query = EntityQueryEnumerator<GhostRoleMobSpawnerComponent, GhostRoleComponent, RepeatSpawnCooldownComponent>();
+        while (query.MoveNext(out var uid, out var spawner, out var ghostRole, out var repeat))
+        {
+            if (!spawner.Repeatable)
+                return;
+
+            repeat.RepeatAccumulator += frameTime;
+
+            if (repeat.RepeatAccumulator < repeat.RepeatCooldown)
+                continue;
+
+            if (spawner.Summon != null)
+            {
+                Del(spawner.Summon.Value);
+                spawner.Summon = null;
+            }
+            spawner.AlreadySummoned = false;
+            ghostRole.Taken = false;
+
+            _popupSystem.PopupEntity(Loc.GetString("bible-summon-respawn-ready", ("book", uid)), uid, PopupType.Medium);
+            // _audio.PlayPvs(summonableComp.SummonSound, uid);
+        }
     }
 
     /// <summary>
@@ -569,6 +604,12 @@ public sealed class GhostRoleSystem : EntitySystem
         _mindSystem.SetUserId(newMind, player.UserId);
         _mindSystem.TransferTo(newMind, mob);
 
+        if (TryComp<GhostRoleComponent>(mob, out var ghostRole))
+        {
+            ghostRole.SpawnedFromCreature = role.SpawnedFromCreature;
+            ghostRole.SpawnedFromItem = role.SpawnedFromItem;
+        }
+
         _roleSystem.MindAddRoles(newMind.Owner, role.MindRoles, newMind.Comp);
 
         if (_roleSystem.MindHasRole<GhostRoleMarkerRoleComponent>(newMind!, out var markerRole))
@@ -719,6 +760,8 @@ public sealed class GhostRoleSystem : EntitySystem
 
     private void OnRoleStartup(Entity<GhostRoleComponent> ent, ref ComponentStartup args)
     {
+        if (ent.Comp.RegisterAfterInteract)
+            return;
         RegisterGhostRole(ent);
     }
 
@@ -730,7 +773,8 @@ public sealed class GhostRoleSystem : EntitySystem
     private void OnSpawnerTakeRole(EntityUid uid, GhostRoleMobSpawnerComponent component, ref TakeGhostRoleEvent args)
     {
         if (!TryComp(uid, out GhostRoleComponent? ghostRole) ||
-            !CanTakeGhost(uid, ghostRole))
+            !CanTakeGhost(uid, ghostRole) ||
+            component.AlreadySummoned)
         {
             args.TookRole = false;
             return;
@@ -751,6 +795,7 @@ public sealed class GhostRoleSystem : EntitySystem
         EnsureComp<MindContainerComponent>(mob);
 
         GhostRoleInternalCreateMindAndTransfer(args.Player, uid, mob, ghostRole);
+        UnregisterGhostRole((uid, ghostRole));
 
         if (++component.CurrentTakeovers < component.AvailableTakeovers)
         {
@@ -758,7 +803,9 @@ public sealed class GhostRoleSystem : EntitySystem
             return;
         }
 
+        component.Summon = uid;
         ghostRole.Taken = true;
+        component.AlreadySummoned = true;
 
         if (component.DeleteOnSpawn)
             QueueDel(uid);
@@ -799,6 +846,37 @@ public sealed class GhostRoleSystem : EntitySystem
         UnregisterGhostRole((uid, ghostRole));
 
         args.TookRole = true;
+    }
+
+    private void AddVerb(EntityUid uid, GhostRoleMobSpawnerComponent component, GetVerbsEvent<AlternativeVerb> args)
+    {
+        if (!args.CanInteract || !args.CanAccess || !component.Repeatable || component.AlreadySummoned || component.Prototype == null)
+            return;
+
+        if (component.RequiredComponents.Count >= 1)
+        {
+            foreach (var comp in component.RequiredComponents)
+            {
+                if (!HasComp(uid, comp.GetType()))
+                    break;
+            }
+        }
+
+        AlternativeVerb verb = new()
+        {
+            Act = () =>
+            {
+                if (!TryComp<GhostRoleComponent>(uid, out var ghostRole))
+                    return;
+
+                ghostRole.SpawnedFromCreature = args.User;
+                ghostRole.SpawnedFromItem = args.Target;
+                RegisterGhostRole((uid, ghostRole));
+            },
+            Text = Loc.GetString("bible-summon-verb"),
+            Priority = 2
+        };
+        args.Verbs.Add(verb);
     }
 
     private void OnVerb(EntityUid uid, GhostRoleMobSpawnerComponent component, GetVerbsEvent<Verb> args)

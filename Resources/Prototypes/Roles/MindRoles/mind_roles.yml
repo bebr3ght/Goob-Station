@@ -57,6 +57,7 @@
   components:
   - type: MindRole
     roleType: Familiar
+  - type: FamiliarRole
 
 - type: entity
   parent: [ BaseMindRoleAntag, MindRoleGhostRoleNeutral ]
@@ -108,6 +109,7 @@
   - type: MindRole
     roleType: TeamAntagonist
     antagPrototype: GenericTeamAntagonist
+  - type: TeamAntagonistRole
 
 # This should be used (or inherited) for team antags that are summoned or converted in large quantities, and are "secondary" to other antags
 - type: entity

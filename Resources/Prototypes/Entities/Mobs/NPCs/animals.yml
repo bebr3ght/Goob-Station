@@ -3588,6 +3588,7 @@
         Base: syndicat_dead
       Dead:
         Base: syndicat_dead
+  - type: Familiar
   - type: GhostRole
     prob: 1
     name: ghost-role-information-SyndiCat-name
@@ -3608,7 +3609,7 @@
     factions:
     - Syndicate
   - type: Access
-    tags: 
+    tags:
     - NuclearOperative
     - SyndicateAgent
   - type: MeleeWeapon

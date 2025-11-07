@@ -8,6 +8,11 @@ role-type-silicon-antagonist-name = Altered Silicon
 
 role-type-update-message = Your role is [color = {$color}]{$role}[/color]
 
+role-type-update-message-familiar = Your master - {$owner} ({$owner-role}). { $team ->
+    [empty] Team - {$team}. You are bound by the ties of service. Follow and obey all instructions states from him and his Allies.
+    *[other] You are bound by the ties of service. Follow and obey all instructions states from him.
+}
+
 # If you change a color here, you might want to also change it in role_types.yml
 role-type-crew-aligned-color = #eeeeee
 role-type-crew-aligned-alternate-color = #008000

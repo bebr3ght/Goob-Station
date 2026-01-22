@@ -215,7 +215,18 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
     {
         var ent = args.Mind.Comp.OwnedEntity;
         var head = HasComp<HeadRevolutionaryComponent>(ent);
-        args.Append(Loc.GetString(head ? "head-rev-briefing" : "rev-briefing"));
+
+        // Goobstation - briefing & greeting improve
+        if (comp.MasterHeadRevolutionary != null &&
+            _mind.TryGetMind(comp.MasterHeadRevolutionary.Value, out _, out var masterComp))
+        {
+            var masterName = masterComp.CharacterName ?? "Unknown";
+            args.Append(Loc.GetString("rev-briefing", ("master", masterName), ("color", Color.AliceBlue)), Color.CornflowerBlue);
+        }
+        else
+        {
+            args.Append(Loc.GetString("head-rev-briefing", ("color", Color.AliceBlue)), Color.CornflowerBlue);
+        }
     }
 
     /// <summary>
@@ -280,10 +291,19 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
         if (mindId == default || !_role.MindHasRole<RevolutionaryRoleComponent>(mindId))
         {
             _role.MindAddRole(mindId, "MindRoleRevolutionary");
+
+            // Goobstation - briefing & greeting improve
+            if (_role.MindHasRole<RevolutionaryRoleComponent>(mindId, out var role))
+                role.Value.Comp2.MasterHeadRevolutionary = ev.User;
         }
 
-        if (mind is { UserId: not null } && _player.TryGetSessionById(mind.UserId, out var session))
-            _antag.SendBriefing(session, Loc.GetString("rev-role-greeting"), Color.Red, revComp.RevStartSound);
+        if (mind is { UserId: not null } && _player.TryGetSessionById(mind.UserId, out var session) && ev.User != null)
+        {
+            _antag.SendBriefing(session,
+                Loc.GetString("rev-role-greeting", ("commander", Name(ev.User.Value)), ("subColor", Color.AliceBlue)),
+                Color.CornflowerBlue,
+                revComp.RevStartSound);
+        }
 
         // Goobstation - Check lose if command was converted
         if (!TryComp<CommandStaffComponent>(ev.Target, out var commandComp))

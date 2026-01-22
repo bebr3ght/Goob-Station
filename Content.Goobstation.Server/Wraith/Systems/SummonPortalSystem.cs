@@ -1,5 +1,6 @@
 using Content.Goobstation.Shared.Wraith.Components;
 using Content.Goobstation.Shared.Wraith.Events;
+using Content.Shared.Bible.Components;
 using Content.Shared.Physics;
 using Content.Shared.Popups;
 using Robust.Server.GameObjects;
@@ -15,6 +16,7 @@ public sealed partial class SummonPortalSystem : EntitySystem
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     [Dependency] private readonly INetManager _netManager = default!;
     [Dependency] private readonly TransformSystem _transform = default!;
+    [Dependency] private readonly VoidPortalSystem _voidPortal = default!;
 
     public override void Initialize()
     {
@@ -53,12 +55,16 @@ public sealed partial class SummonPortalSystem : EntitySystem
         }
 
         // Spawn the ritual circle
-        var portal = Spawn(ent.Comp.RitualCircle, center);
+        var portal = Spawn(comp.RitualCircle, center);
+        var voidPortal = Comp<VoidPortalComponent>(portal);
+        var hasOwner = EnsureComp<HasOwnerComponent>(portal);
+        hasOwner.OwnerMob = uid;
 
         ent.Comp.CurrentPortal = portal;
         ent.Comp.CurrentActivePortals = 1;
         Dirty(ent);
 
+        _voidPortal.StartSpawnCycle(portal, voidPortal);
         _popup.PopupEntity(Loc.GetString("wraith-portal-gathering"), ent.Owner, ent.Owner, PopupType.Small);
 
         args.Handled = true;

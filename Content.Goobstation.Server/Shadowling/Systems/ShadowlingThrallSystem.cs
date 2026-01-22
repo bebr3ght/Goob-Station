@@ -5,6 +5,7 @@ using Content.Goobstation.Shared.Shadowling.Components.Abilities.Thrall;
 using Content.Server.Antag;
 using Content.Server.Mind;
 using Content.Server.Roles;
+using Content.Shared.Bible.Components;
 using Content.Shared.Examine;
 using Content.Shared.IdentityManagement;
 
@@ -31,13 +32,18 @@ public sealed class ShadowlingThrallSystem : EntitySystem
     private void OnStartup(EntityUid uid, ThrallComponent component, ComponentStartup args)
     {
         // antag stuff
-        if (!_mind.TryGetMind(uid, out var mindId, out _))
+        if (!_mind.TryGetMind(uid, out var mindId, out var mind) || !TryComp<HasOwnerComponent>(uid, out var hasOwner))
             return;
 
         if (!_roles.MindHasRole<ShadowlingRoleComponent>(mindId))
-            _roles.MindAddRole(mindId, "MindRoleThrall");
+            _roles.MindAddRole(mindId, "MindRoleThrall", mind, true);
 
-        _antag.SendBriefing(uid, Loc.GetString("thrall-role-greeting"), Color.MediumPurple, component.ThrallConverted);
+        var ownerName = "";
+
+        if (hasOwner.OwnerMob != null)
+            ownerName = Name(hasOwner.OwnerMob.Value);
+
+        _antag.SendBriefing(uid, Loc.GetString("thrall-role-greeting", ("owner", ownerName), ("hasOwner", hasOwner.OwnerMob != null), ("subColor", Color.Purple)), Color.MediumPurple, component.ThrallConverted);
     }
 
     private void OnRemove(EntityUid uid, ThrallComponent component, ComponentShutdown args)

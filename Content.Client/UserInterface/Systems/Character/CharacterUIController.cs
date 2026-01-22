@@ -210,8 +210,7 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
         {
             var briefingControl = new ObjectiveBriefingControl();
             var text = new FormattedMessage();
-            text.PushColor(Color.Yellow);
-            text.AddText(briefing);
+            text.AddMarkupOrThrow(briefing); // Goobstation - briefing & greeting improve
             briefingControl.Label.SetMessage(text);
             _window.Objectives.AddChild(briefingControl);
         }

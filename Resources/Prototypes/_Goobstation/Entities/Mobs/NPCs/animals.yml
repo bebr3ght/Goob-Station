@@ -164,6 +164,7 @@
     equippedPrefix: 0
     slots:
     - HEAD
+  - type: Familiar
   - type: GhostRole
     prob: 1
     name: ghost-role-information-SyndiRoach-name
@@ -171,7 +172,7 @@
     description: ghost-role-information-SyndiRoach-description
     rules: ghost-role-information-SyndiRoach-rules
     mindRoles:
-    - MindRoleGhostRoleTeamAntagonist
+    - MindRoleGhostRoleFamiliarReinforcement
     raffle:
       settings: default
   - type: GhostTakeoverAvailable
@@ -466,6 +467,7 @@
         - SmallMobMask
         layer:
         - SmallMobLayer
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -473,6 +475,8 @@
     name: ghost-role-information-homunculus-name
     description: ghost-role-information-homunculus-description
     rules: ghost-role-information-familiar-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
   - type: GhostTakeoverAvailable
   - type: Speech
     speechSounds: Alto

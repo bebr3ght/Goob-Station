@@ -17,7 +17,7 @@
     description: ghost-role-information-SyndiRoach-description
     rules: ghost-role-information-SyndiRoach-rules
     mindRoles:
-    - MindRoleGhostRoleTeamAntagonist
+    - MindRoleGhostRoleFamiliarReinforcement
     raffle:
       settings: default
     requirements:
@@ -25,5 +25,6 @@
       time: 18000 #5 hours
   - type: GhostRoleMobSpawner
     prototype: MobMothSyndy
+    assignOwners: true
   - type: EmitSoundOnUse
     sound: /Audio/Animals/mouse_squeak.ogg

@@ -64,6 +64,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalCrunchedWraith
@@ -77,6 +78,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalShadeWraith
@@ -90,6 +92,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalMonstrosityHeadWraith
@@ -103,6 +106,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalMonstrosityBodyWraith
@@ -116,6 +120,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalLionWraith
@@ -129,6 +134,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalAncientRepairBotWraith
@@ -142,6 +148,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalAncientGuardBotWraith
@@ -155,6 +162,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalAncientRobot1Wraith
@@ -168,6 +176,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalAncientRobot2Wraith
@@ -181,6 +190,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalAncientRobot3Wraith
@@ -194,6 +204,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalAncientLegsWraith
@@ -207,6 +218,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalBearGoonWraith
@@ -220,6 +232,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalBrullbarWraith
@@ -233,6 +246,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalBGunbotWraith
@@ -246,6 +260,7 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
+    assignOwners: true
 
 - type: entity
   id: VoidPortalNukebotWraith
@@ -259,5 +274,4 @@
     intervalSeconds: 5
     minimumEntitiesSpawned: 1
     maximumEntitiesSpawned: 1
-
-
+    assignOwners: true

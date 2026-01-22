@@ -124,7 +124,6 @@
   name: Urist McHands
   parent: BaseMobHuman
   id: MobHuman
-  
 #Syndie
 - type: entity
   parent: MobHuman
@@ -153,6 +152,7 @@
   # make the player a traitor once its taken
   - type: AutoTraitor
     profile: TraitorReinforcement
+  - type: Familiar
 
 - type: entity
   parent: MobHumanSyndicateAgent
@@ -187,6 +187,7 @@
   suffix: Human, NukeOps
   components:
   - type: NukeOperative
+  - type: Familiar
   - type: RandomMetadata
     nameSegments:
     - NamesSyndicateNormal

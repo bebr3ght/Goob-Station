@@ -448,7 +448,7 @@ public sealed class BlobObserverSystem : SharedBlobObserverSystem
         if (!_blobCoreSystem.TryUseAbility((uid, blobCoreComponent), blobCoreComponent.BlobbernautCost, args.Target.AlignWithClosestGridTile()))
             return;
 
-        var ev = new ProduceBlobbernautEvent();
+        var ev = new ProduceBlobbernautEvent(args.Performer);
         RaiseLocalEvent(blobTile.Value, ev);
 
         _popup.PopupEntity(Loc.GetString("blob-spent-resource", ("point", blobCoreComponent.BlobbernautCost)),

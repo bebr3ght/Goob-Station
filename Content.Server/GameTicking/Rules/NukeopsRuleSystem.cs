@@ -106,6 +106,8 @@ using System.Linq;
 using Content.Shared.Store.Components;
 using Content.Server.Station.Systems;
 using Content.Server.Chat.Systems;
+using Content.Server.Mind;
+using Content.Shared.Roles;
 using Robust.Server.Player;
 using Robust.Shared.Prototypes;
 
@@ -124,13 +126,17 @@ public sealed class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleComponent>
     [Dependency] private readonly StationSystem _stationSystem = default!;
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly IPlayerManager _playerManager = default!;
+    [Dependency] private readonly MindSystem _mind = default!;
     // goob edit end
 
     private static readonly ProtoId<CurrencyPrototype> TelecrystalCurrencyPrototype = "Telecrystal";
     private static readonly ProtoId<TagPrototype> NukeOpsUplinkTagPrototype = "NukeOpsUplink";
 
+    // Goobstation
     [ValidatePrototypeId<TagPrototype>]
-    private const string NukeOpsReinforcementUplinkTagPrototype = "NukeOpsReinforcementUplink"; // Goobstation
+    private const string NukeOpsReinforcementUplinkTagPrototype = "NukeOpsReinforcementUplink";
+    public readonly Color MainColor = Color.Orange;
+    public readonly Color SubColor = Color.OrangeRed;
 
     public override void Initialize()
     {
@@ -581,22 +587,76 @@ public sealed class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleComponent>
         nukeops.RoundEndBehavior = RoundEndBehavior.Nothing;
     }
 
+    // Goobstation - briefing & greeting improve
+    private bool TryFindCommander(out EntityUid? commander)
+    {
+        var query = EntityQueryEnumerator<NukeOperativeComponent>();
+        while (query.MoveNext(out var uid, out var nukeOperative))
+        {
+            if (!_mind.TryGetMind(uid, out var mindId, out var mind))
+                continue;
+
+            foreach (var roleId in mind.MindRoles)
+            {
+                if (TryComp<MindRoleComponent>(roleId, out var role) &&
+                    role.AntagPrototype == "NukeopsCommander" &&
+                    mind.OwnedEntity.HasValue)
+                {
+                    commander = mind.OwnedEntity.Value;
+                    return true;
+                }
+            }
+        }
+
+        commander = null;
+        return false;
+    }
+
     private void OnAfterAntagEntSelected(Entity<NukeopsRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         var target = (ent.Comp.TargetStation is not null) ? Name(ent.Comp.TargetStation.Value) : "the target";
 
+        // Goobstation - briefing & greeting improve - Start
+        if (!_mind.TryGetMind(args.EntityUid, out _, out var mind))
+            return;
+
+        var commander = "";
+        var hasCommander = false;
+
+        if (TryFindCommander(out var comma))
+        {
+            commander = Name(comma!.Value);
+            if (mind.CharacterName != commander)
+                hasCommander = true;
+        }
+        // Goobstation - briefing & greeting improve - End
+
         _antag.SendBriefing(args.Session,
             Loc.GetString($"{ent.Comp.LocalePrefix}welcome",
                 ("station", target),
-                ("name", Name(ent))),
-            Color.Red,
+                ("name", Name(ent)),
+                ("commander", commander),
+                ("hasCommander", hasCommander),
+                ("subColor", Color.OrangeRed)),
+            Color.Orange,
             ent.Comp.GreetSoundNotification);
     }
 
     private void OnGetBriefing(Entity<NukeopsRoleComponent> role, ref GetBriefingEvent args)
     {
+        // Goobstation - briefing & greeting improve - Start
+        var commander = "";
+        var hasCommander = false;
+
+        if (TryFindCommander(out var comma))
+        {
+            commander = Name(comma!.Value);
+            hasCommander = true;
+        }
+        // Goobstation - briefing & greeting improve - End
+
         // TODO Different character screen briefing for the 3 nukie types
-        args.Append(Loc.GetString("nukeops-briefing")); // TODO: Goobstation: somehow pass the nukeopsrulecomponent here so we can change this based on LocalePrefix for Honkops.
+        args.Append(Loc.GetString("nukeops-briefing", ("commander", commander), ("subColor", SubColor), ("hasCommander", hasCommander)), MainColor); // TODO: Goobstation: somehow pass the nukeopsrulecomponent here so we can change this based on LocalePrefix for Honkops.
     }
 
     /// <remarks>

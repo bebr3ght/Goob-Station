@@ -38,9 +38,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Content.Server.Body.Systems;
+using Content.Server.Ghost.Roles;
 using Content.Server.Popups;
 using Content.Shared._Goobstation.Wizard.Guardian;
 using Content.Shared.Actions;
+using Content.Shared.Bible.Components;
 using Content.Shared.Damage;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
@@ -77,7 +79,9 @@ namespace Content.Server.Guardian
         [Dependency] private readonly BodySystem _bodySystem = default!;
         [Dependency] private readonly SharedContainerSystem _container = default!;
         [Dependency] private readonly SharedTransformSystem _transform = default!;
+
         [Dependency] private readonly NpcFactionSystem _faction = default!; // Goobstation
+        [Dependency] private readonly GhostRoleSystem _ghostRole = default!; // Goobstation
 
         public override void Initialize()
         {
@@ -276,6 +280,8 @@ namespace Content.Server.Guardian
             var guardian = Spawn(component.GuardianProto, _transform.GetMapCoordinates(args.Args.Target.Value, xform: hostXform));
 
             // Goobstation start
+            _ghostRole.SetSpawnedFrom(guardian, args.Args.Target, uid);
+
             _faction.IgnoreEntity(guardian, args.Args.Target.Value);
             var sharedComp = EnsureComp<GuardianSharedComponent>(guardian);
             sharedComp.Host = args.Args.Target.Value;

@@ -52,6 +52,7 @@
     attributes:
       gender: male
   - type: GhostTakeoverAvailable
+  - type: Familiar
   - type: GhostRole
     allowMovement: true
     allowSpeech: true

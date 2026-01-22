@@ -29,6 +29,7 @@ using Robust.Shared.Random;
 using System.Text;
 using Content.Server.Station.Components;
 using Content.Server._Goobstation.Objectives.Components;
+using Robust.Shared.Utility;
 
 namespace Content.Server.GameTicking.Rules;
 
@@ -92,13 +93,17 @@ public sealed class HereticRuleSystem : GameRuleSystem<HereticRuleComponent>
         // briefing
         if (HasComp<MetaDataComponent>(target))
         {
-            var briefingShort = Loc.GetString("heretic-role-greeting-short");
+            var text = new FormattedMessage();
+            var briefingShort = Loc.GetString("heretic-role-greeting-short", ("subColor", Color.Purple));
+            text.PushColor(Color.MediumPurple);
+            text.AddMarkupOrThrow(briefingShort);
+            var finalBriefing = text.ToMarkup();
 
-            _antag.SendBriefing(target, Loc.GetString("heretic-role-greeting-fluff"), Color.MediumPurple, null);
-            _antag.SendBriefing(target, Loc.GetString("heretic-role-greeting"), Color.Red, BriefingSound);
+            _antag.SendBriefing(target, Loc.GetString("heretic-role-greeting-fluff", ("subColor", Color.Purple)), Color.MediumPurple, null);
+            _antag.SendBriefing(target, Loc.GetString("heretic-role-greeting", ("subColor", Color.Purple)), Color.MediumPurple, BriefingSound);
 
             if (_role.MindHasRole<HereticRoleComponent>(mindId, out var mr))
-                AddComp(mr.Value, new RoleBriefingComponent { Briefing = briefingShort }, overwrite: true);
+                AddComp(mr.Value, new RoleBriefingComponent { Briefing = finalBriefing }, overwrite: true);
         }
         _npcFaction.RemoveFaction(target, NanotrasenFactionId, false);
         _npcFaction.AddFaction(target, HereticFactionId);

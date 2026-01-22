@@ -3,6 +3,7 @@ using Content.Goobstation.Shared.LightDetection.Systems;
 using Content.Goobstation.Shared.Mindcontrol;
 using Content.Goobstation.Shared.Shadowling.Components;
 using Content.Shared.Actions;
+using Content.Shared.Bible.Components;
 using Content.Shared.Damage;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
@@ -216,6 +217,9 @@ public abstract class SharedShadowlingSystem : EntitySystem
             return;
 
         var target = args.Target.Value;
+
+        var hasOwner = EnsureComp<HasOwnerComponent>(target);
+        hasOwner.OwnerMob = uid;
 
         var thrall = EnsureComp<ThrallComponent>(target);
         thrall.Converter = uid;

@@ -5,8 +5,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Content.Goobstation.Shared.CloneProjector.Clone;
+using Content.Shared.Bible.Components;
+using Content.Shared.Mind;
+using Content.Shared.Mind.Components;
 using Content.Shared.Nyanotrasen.Holograms;
 using Content.Shared.Popups;
+using Content.Shared.Roles;
 using Content.Shared.Weapons.Melee.Events;
 using Content.Shared.Weapons.Ranged.Events;
 using Robust.Shared.Containers;
@@ -17,6 +21,9 @@ public abstract class SharedCloneProjectorSystem : EntitySystem
 {
     [Dependency] private readonly SharedPopupSystem _popupSystem = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
+    [Dependency] private readonly SharedRoleSystem _roleSystem = default!;
+    [Dependency] private readonly SharedMindSystem _mind = default!;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -24,6 +31,13 @@ public abstract class SharedCloneProjectorSystem : EntitySystem
         SubscribeLocalEvent<HolographicCloneComponent, ComponentStartup>(OnStartup);
         SubscribeLocalEvent<HolographicCloneComponent, MeleeHitEvent>(OnMeleeHit);
         SubscribeLocalEvent<HolographicCloneComponent, ShotAttemptedEvent>(OnShotAttempted);
+        SubscribeLocalEvent<HolographicCloneComponent, MindAddedMessage>(OnMindAdded);
+    }
+
+    private void OnMindAdded(EntityUid uid, HolographicCloneComponent component, MindAddedMessage args)
+    {
+        if (_mind.TryGetMind(uid, out var cloneMindId, out var cloneMind))
+            _roleSystem.MindAddRole(cloneMindId, "MindRoleGhostRoleFamiliar", cloneMind);
     }
 
     private void OnStartup(Entity<HolographicCloneComponent> clone, ref ComponentStartup args)

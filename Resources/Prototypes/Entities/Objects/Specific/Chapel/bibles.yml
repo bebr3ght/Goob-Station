@@ -154,6 +154,9 @@
     prototype: MobBatRemilia
     deleteOnSpawn: false
     repeatCooldown: 30
+    requiredComponents:
+    - type: BibleUser
+    assignOwners: true
   - type: UseDelay
     delay: 10.0
   - type: Bible
@@ -230,10 +233,11 @@
     - MindRoleGhostRoleFamiliar
     raffle:
       settings: default
+    registerAfterInteract: true
   - type: GhostRoleMobSpawner
     prototype: MobCorgiCerberus
     deleteOnSpawn: false
-    repeatCooldown: 30
+    assignOwners: true
   - type: Bible
     damage:
       types:

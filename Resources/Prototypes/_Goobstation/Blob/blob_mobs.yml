@@ -148,12 +148,13 @@
       defaultChannel: Blobmind
       channels:
       - Blobmind
+    - type: Familiar
     - type: GhostRole
       name: ghost-role-information-blobbernaut-name
       description: ghost-role-information-blobbernaut-description
       rules: You are an antagonist, defend your blob core!
       mindRoles:
-      - MindRoleGhostRoleTeamAntagonist
+      - MindRoleGhostRoleFamiliarTeamAntagonist
       raffle:
         settings: short
     - type: GhostTakeoverAvailable

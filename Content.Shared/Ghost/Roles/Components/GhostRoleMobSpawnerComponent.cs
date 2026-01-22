@@ -35,6 +35,7 @@ namespace Content.Shared.Ghost.Roles.Components
         [DataField]
         public bool DeleteOnSpawn = true;
 
+        // Goobstation - briefing for familiars - Start
         [DataField]
         public bool Repeatable
         {
@@ -68,10 +69,30 @@ namespace Content.Shared.Ghost.Roles.Components
         public bool AlreadySummoned;
 
         /// <summary>
-        /// The specific creature this summoned, if the SpecialItemPrototype has a mobstate.
+        /// The specific creature this summoned.
         /// </summary>
         [ViewVariables]
-        public EntityUid? Summon = null;
+        public EntityUid? SpawnedEntity = null;
+
+        /// <summary>
+        ///     Cooldown time before the ghost role can be spawned again.
+        ///     Required when Repeatable is true (DeleteOnSpawn is false).
+        /// </summary>
+        [DataField]
+        public float? SpawnCooldown = 100f;
+
+        [DataField]
+        public bool AssignOwners;
+
+        [ViewVariables]
+        public EntityUid? OwnerItem = null;
+
+        [DataField]
+        public EntityUid? OwnerMob = null;
+
+        [DataField]
+        public ComponentRegistry RequiredComponents = new();
+        // Goobstation - briefing for familiars - End
 
         [DataField]
         public int AvailableTakeovers = 1;
@@ -88,7 +109,5 @@ namespace Content.Shared.Ghost.Roles.Components
         [DataField]
         public List<string> SelectablePrototypes = [];
 
-        [DataField("requiredComponents")]
-        public List<ComponentRegistry> RequiredComponents = [];
     }
 }

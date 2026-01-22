@@ -11,10 +11,12 @@ using Content.Goobstation.Shared.CloneProjector;
 using Content.Goobstation.Shared.CloneProjector.Clone;
 using Content.Server.Emp;
 using Content.Server.Ghost.Roles.Components;
+using Content.Server.Roles;
 using Content.Shared._DV.Carrying;
 using Content.Shared._EinsteinEngines.Silicon.IPC;
 using Content.Shared.Actions;
 using Content.Shared.Actions.Components;
+using Content.Shared.Bible.Components;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Damage;
 using Content.Shared.Examine;
@@ -68,7 +70,6 @@ public sealed partial class CloneProjectorSystem : SharedCloneProjectorSystem
     [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
     [Dependency] private readonly MobThresholdSystem _thresholds = default!;
     [Dependency] private readonly InternalEncryptionKeySpawner _encryptionKeySpawner = default!;
-
     private ISawmill _sawmill = default!;
     public override void Initialize()
     {
@@ -277,7 +278,11 @@ public sealed partial class CloneProjectorSystem : SharedCloneProjectorSystem
         projector.Comp.CurrentHost = performer;
 
         var cloneComp = EnsureComp<HolographicCloneComponent>(clone);
+        var hasOwner = EnsureComp<HasOwnerComponent>(clone);
+        EnsureComp<FamiliarComponent>(clone);
 
+        hasOwner.OwnerMob = performer;
+        hasOwner.OwnerItem = projector;
         cloneComp.HostProjector = projector;
         cloneComp.HostEntity = performer;
 

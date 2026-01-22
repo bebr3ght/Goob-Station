@@ -2,6 +2,7 @@ using System.Numerics;
 using Content.Goobstation.Common.Physics;
 using Content.Shared._Shitcode.Heretic.Components;
 using Content.Shared._Shitcode.Heretic.Systems.Abilities;
+using Content.Shared.Bible.Components;
 using Content.Shared.Coordinates;
 using Content.Shared.DoAfter;
 using Content.Shared.Heretic;
@@ -208,6 +209,10 @@ public abstract class SharedStarGazerSystem : EntitySystem
                 PredictedSpawnAtPosition(summoner.Comp2.StarGazerId, spawnCoords ?? Transform(summoner).Coordinates);
             Xform.AttachToGridOrMap(starGazer);
             comp = EnsureComp<StarGazerComponent>(starGazer);
+
+            var hasOwner = EnsureComp<HasOwnerComponent>(starGazer);
+            hasOwner.OwnerMob = summoner;
+
             comp.Summoner = summoner;
             summoner.Comp2.StarGazer = starGazer;
             Dirty(summoner, summoner.Comp2);

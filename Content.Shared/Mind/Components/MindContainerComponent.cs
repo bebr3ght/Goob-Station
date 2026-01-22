@@ -138,3 +138,14 @@ public sealed class MindGotAddedEvent : MindEvent
     {
     }
 }
+
+
+// Goobstation - briefing for familiars
+/// <summary>
+/// Event raised after mind roles assigned to prevent that greeting will be earlier than role-type-update-message
+/// </summary>
+/// <param name="mind"></param>
+public sealed class AfterMindRolesBriefingEvent(Entity<MindComponent> mind) : EntityEventArgs
+{
+    public Entity<MindComponent> Mind = mind;
+}

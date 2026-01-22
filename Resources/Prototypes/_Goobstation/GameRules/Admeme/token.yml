@@ -164,6 +164,7 @@
       briefing:
         text: abductor-role-greeting
         color: Green
+        subColor: LawnGreen
         sound: /Audio/_Shitmed/Misc/abductor.ogg
       components:
       - type: Abductor

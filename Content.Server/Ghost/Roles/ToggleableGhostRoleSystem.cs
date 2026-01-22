@@ -58,6 +58,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Content.Server.Ghost.Roles.Components;
+using Content.Shared.Bible.Components;
 using Content.Shared.Examine;
 using Content.Shared.Interaction; // Goobstation
 using Content.Shared.Interaction.Events;
@@ -76,6 +77,8 @@ public sealed class ToggleableGhostRoleSystem : EntitySystem
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
+
+    [Dependency] private readonly GhostRoleSystem _ghostRole = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -218,6 +221,7 @@ public sealed class ToggleableGhostRoleSystem : EntitySystem
         ghostRole.RoleRules = Loc.GetString(component.RoleRules);
         ghostRole.JobProto = component.JobProto;
         ghostRole.MindRoles = component.MindRoles;
+        _ghostRole.SetSpawnedFrom(uid, user);
     }
 
     /// <summary>

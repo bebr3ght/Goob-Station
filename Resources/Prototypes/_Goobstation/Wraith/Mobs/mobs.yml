@@ -706,6 +706,7 @@
   suffix: Wraith
   parent: MobSkeletonGoon
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -713,6 +714,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -724,6 +727,7 @@
   suffix: Wraith
   parent: MobCrunched
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -731,6 +735,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -745,6 +751,7 @@
   suffix: Wraith
   parent: MobShade
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -752,6 +759,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -763,6 +772,7 @@
   suffix: Wraith
   parent: MobMonstrosityHead
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -770,6 +780,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -781,6 +793,7 @@
   suffix: Wraith
   parent: MobMonstrosityBody
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -788,6 +801,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -799,6 +814,7 @@
   suffix: Wraith
   parent: MobLion
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -806,6 +822,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -817,6 +835,7 @@
   suffix: Wraith
   parent: MobAncientRepairBot
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -824,6 +843,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -835,6 +856,7 @@
   suffix: Wraith
   parent: MobAncientGuardBot
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -842,6 +864,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -853,6 +877,7 @@
   suffix: Wraith
   parent: MobAncientRobot1
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -860,6 +885,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -871,6 +898,7 @@
   suffix: Wraith
   parent: MobAncientRobot2
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -878,6 +906,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -889,6 +919,7 @@
   suffix: Wraith
   parent: MobAncientRobot3
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -896,6 +927,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -907,6 +940,7 @@
   suffix: Wraith
   parent: MobAncientLegs
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -914,6 +948,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -925,6 +961,7 @@
   suffix: Wraith
   parent: MobBearGoon
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -932,6 +969,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -946,6 +985,7 @@
   suffix: Wraith
   parent: MobBrullbar
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -953,6 +993,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -967,6 +1009,7 @@
   suffix: Wraith
   parent: GunBot
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -974,6 +1017,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable
@@ -1004,6 +1049,7 @@
   suffix: Wraith
   parent: NukeBot
   components:
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -1011,6 +1057,8 @@
     name: ghost-role-information-voidsummon-name
     description: ghost-role-information-voidsummon-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: GhostTakeoverAvailable

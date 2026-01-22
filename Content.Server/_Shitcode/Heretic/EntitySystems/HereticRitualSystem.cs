@@ -24,6 +24,7 @@ using System.Linq;
 using Robust.Shared.Serialization.Manager;
 using Content.Shared.Examine;
 using Content.Shared._Goobstation.Heretic.Components;
+using Content.Shared.Bible.Components;
 using Content.Shared.Stacks;
 using Robust.Shared.Containers;
 
@@ -171,9 +172,11 @@ public sealed partial class HereticRitualSystem : EntitySystem
             for (var i = 0; i < output[ent]; i++)
             {
                 var spawned = Spawn(ent, Transform(platform).Coordinates);
+                EnsureComp<HasOwnerComponent>(spawned, out var hasOwner);
                 if (!ghoulQuery.TryComp(spawned, out var ghoul))
                     continue;
 
+                hasOwner.OwnerMob = performer;
                 ghoul.BoundHeretic = performer;
                 Dirty(spawned, ghoul);
             }

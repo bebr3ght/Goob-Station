@@ -60,21 +60,6 @@ public sealed partial class GhostRoleComponent : Component
     [ViewVariables(VVAccess.ReadWrite)] [DataField("makeSentient")]
     public bool MakeSentient = true;
 
-    [DataField]
-    public bool RegisterAfterInteract;
-
-    /// <summary>
-    /// Creature that summoned the mob.
-    /// </summary>
-    [DataField]
-    public EntityUid? SpawnedFromCreature;
-
-    /// <summary>
-    /// Item that was interacted to summon the mob.
-    /// </summary>
-    [DataField]
-    public EntityUid? SpawnedFromItem;
-
     /// <summary>
     ///     The probability that this ghost role will be available after init.
     ///     Used mostly for takeover roles that want some probability of being takeover, but not 100%.
@@ -158,5 +143,9 @@ public sealed partial class GhostRoleComponent : Component
     [DataField("job")]
     [Access(typeof(GhostRoleSystem), Other = AccessPermissions.ReadWriteExecute)] // also FIXME Friends
     public ProtoId<JobPrototype>? JobProto = null;
+
+    // Goobstation
+    [DataField]
+    public bool RegisterAfterInteract;
 }
 

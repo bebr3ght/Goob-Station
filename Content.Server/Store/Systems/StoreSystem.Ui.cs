@@ -43,6 +43,10 @@ using Content.Shared.Actions;
 using Content.Shared.Database;
 using Content.Goobstation.Maths.FixedPoint;
 using Content.Goobstation.Shared.ManifestListings;
+using Content.Server.Ghost.Roles;
+using Content.Server.Ghost.Roles.Components;
+using Content.Shared.Bible.Components;
+using Content.Shared.Ghost.Roles.Components;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Heretic; // Goob
 using Content.Shared.Heretic.Prototypes; // Goob
@@ -72,8 +76,10 @@ public sealed partial class StoreSystem
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly StackSystem _stack = default!;
     [Dependency] private readonly UserInterfaceSystem _ui = default!;
+
     [Dependency] private readonly HereticKnowledgeSystem _heretic = default!; // goobstation - heretics
     [Dependency] private readonly IGameTiming _timing = default!; // goobstation - ntr update
+    [Dependency] private readonly GhostRoleSystem _ghostRole = default!; // Goobstation - briefing for familiars
 
     private void InitializeUi()
     {
@@ -264,6 +270,13 @@ public sealed partial class StoreSystem
                 {
                     component.BoughtEntities.Add(child);
                 }
+            }
+
+            // Goobstation - briefing for familiars
+            if (TryComp<GhostRoleMobSpawnerComponent>(product, out var spawner) && spawner.AssignOwners)
+            {
+                spawner.OwnerMob = buyer;
+                spawner.OwnerItem = uid;
             }
         }
 

@@ -86,6 +86,7 @@ using Content.Shared.Administration.Logs;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Database;
 using Content.Goobstation.Maths.FixedPoint;
+using Content.Shared.Bible.Components;
 using Content.Shared.Popups;
 using Robust.Shared.Network;
 using Robust.Shared.Random;
@@ -105,17 +106,24 @@ public sealed class RehydratableSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<RehydratableComponent, SolutionContainerChangedEvent>(OnSolutionChange);
+        SubscribeLocalEvent<RehydratableComponent, SolutionTransferredEvent>(OnSolutionChange); // Goobstation - briefing for familiars
     }
 
-    private void OnSolutionChange(Entity<RehydratableComponent> ent, ref SolutionContainerChangedEvent args)
+    private void OnSolutionChange(Entity<RehydratableComponent> ent, ref SolutionTransferredEvent args)
     {
+        ent.Comp.LastUser = args.User;
+
         var quantity = _solutions.GetTotalPrototypeQuantity(ent, ent.Comp.CatalystPrototype);
-        _adminLogger.Add(LogType.Action, LogImpact.Medium, $"{ToPrettyString(ent.Owner)} was hydrated, now contains a solution of: {SharedSolutionContainerSystem.ToPrettyString(args.Solution)}.");
-        if (quantity != FixedPoint2.Zero && quantity >= ent.Comp.CatalystMinimum)
+
+        if (_solutions.TryGetDrainableSolution(ent.Owner, out _, out var solution) ||
+            _solutions.TryGetRefillableSolution(ent.Owner, out _, out solution))
         {
-            Expand(ent);
+            _adminLogger.Add(LogType.Action, LogImpact.Medium,
+                $"{ToPrettyString(ent.Owner)} was hydrated, now contains a solution of: {SharedSolutionContainerSystem.ToPrettyString(solution)}.");
         }
+
+        if (quantity != FixedPoint2.Zero && quantity >= ent.Comp.CatalystMinimum)
+            Expand(ent);
     }
 
     // Try not to make this public if you can help it.
@@ -129,6 +137,11 @@ public sealed class RehydratableSystem : EntitySystem
         var randomMob = _random.Pick(comp.PossibleSpawns);
 
         var target = Spawn(randomMob, Transform(uid).Coordinates);
+
+        // Goobstation - briefing for familiars
+        if (TryComp<HasOwnerComponent>(target, out var hasOwner))
+            hasOwner.OwnerMob = comp.LastUser;
+
         _adminLogger.Add(LogType.Action, LogImpact.Medium, $"{ToPrettyString(ent.Owner)} has been hydrated correctly and spawned: {ToPrettyString(target)}.");
 
         _popup.PopupEntity(Loc.GetString("rehydratable-component-expands-message", ("owner", uid)), target);

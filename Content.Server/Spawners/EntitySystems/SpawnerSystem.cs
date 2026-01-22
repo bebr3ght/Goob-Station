@@ -10,7 +10,8 @@ using System.Threading;
 using Content.Server.Spawners.Components;
 using Robust.Shared.Random;
 using Content.Shared.Friends.Components; // Shitmed Change
-using Content.Shared._Shitmed.Spawners.EntitySystems; // Shitmed Change
+using Content.Shared._Shitmed.Spawners.EntitySystems;
+using Content.Shared.Bible.Components; // Shitmed Change
 
 namespace Content.Server.Spawners.EntitySystems;
 
@@ -48,6 +49,16 @@ public sealed class SpawnerSystem : EntitySystem
             var ev = new SpawnerSpawnedEvent(spawnedEnt, HasComp<PettableFriendComponent>(spawnedEnt));
             RaiseLocalEvent(uid, ev);
             // Shitmed Change End
+            // Goobstation - briefing for familiars - Start
+            if (component.AssignOwners)
+            {
+                var hasOwner = EnsureComp<HasOwnerComponent>(spawnedEnt);
+                if (!TryComp<HasOwnerComponent>(uid, out var hasOwnerUid))
+                    return;
+                hasOwner.OwnerMob = hasOwnerUid.OwnerMob;
+                hasOwner.OwnerItem = hasOwnerUid.OwnerItem;
+            }
+            // Goobstation - briefing for familiars - End
         }
     }
 

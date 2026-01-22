@@ -46,9 +46,9 @@ traitor-death-match-end-round-description-entry = {$originalName}'s PDA, with {$
 
 # TraitorRole
 traitor-role-greeting =
-    You are an agent sent by {$corporation} on behalf of [color = darkred]The Syndicate.[/color]
-    Your objectives and codewords are listed in the character menu.
-    Use your uplink to buy the tools you'll need for this mission.
+    You are an agent sent by [color={$subColor}]{$corporation}[/color] on behalf of [color={$subColor}]The Syndicate.[/color]
+    Your [color={$subColor}]objectives[/color] and [color={$subColor}]codewords[/color] are listed in the character menu.
+    Use your [color={$subColor}]uplink[/color] to buy the tools you'll need for this mission.
     Death to Nanotrasen!
 traitor-role-codewords =
     The codewords are: [color = lightgray]

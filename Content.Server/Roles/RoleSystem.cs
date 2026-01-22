@@ -26,6 +26,7 @@ using Content.Shared.Chat;
 using Content.Shared.Mind;
 using Content.Shared.Roles;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Utility;
 
 namespace Content.Server.Roles;
 
@@ -63,6 +64,17 @@ public sealed class RoleSystem : SharedRoleSystem
         {
             RaiseLocalEvent(role, ref ev);
         }
+
+        // Goobstation - briefing & greeting improve - Start
+        var text = new FormattedMessage();
+        if (ev.Briefing != null && ev.BriefingColor != null)
+        {
+            text.PushColor(ev.BriefingColor.Value);
+            text.AddMarkupOrThrow($"[bold]{ev.Briefing}[/bold]");
+            text.Pop();
+            return text.ToMarkup();
+        }
+        // Goobstation - briefing & greeting improve - End
 
         return ev.Briefing;
     }
@@ -104,22 +116,32 @@ public sealed class GetBriefingEvent
     /// </summary>
     public string? Briefing;
 
+    public Color? BriefingColor; // Goobstation - briefing & greeting improve
+
     /// <summary>
     /// The Mind to whose Mind Role Entities the briefing is sent to
     /// </summary>
     public Entity<MindComponent> Mind;
 
-    public GetBriefingEvent(string? briefing = null)
+    public GetBriefingEvent(string? briefing = null, Color? briefingColor = null)
     {
         Briefing = briefing;
+        BriefingColor = briefingColor; // Goobstation - briefing & greeting improve
     }
 
     /// <summary>
     /// If there is no briefing, sets it to the string.
     /// If there is a briefing, adds a new line to separate it from the appended string.
     /// </summary>
-    public void Append(string text)
+    public void Append(string text, Color? briefingColor = null)
     {
+        // Goobstation - briefing & greeting improve - Start
+        if (briefingColor == null)
+            briefingColor = Color.Orange;
+
+        BriefingColor = briefingColor;
+        // Goobstation - briefing & greeting improve - End
+
         if (Briefing == null)
         {
             Briefing = text;

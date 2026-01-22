@@ -164,6 +164,7 @@
       settings: default
   - type: GhostRoleMobSpawner
     prototype: MobCorgiCerberus
+    assignOwners: true
   - type: Sprite
     sprite: Markers/jobs.rsi
     layers:

@@ -15,21 +15,25 @@ shadowling-round-end-name = shadowling
 shadowling-role-greeting =
     Something stirs deep in your mind. A red light floods your vision, and slowly you remember. Though your human disguise has served you
     well, the time is nigh to cast it off and enter your true form. You have disguised yourself amongst the humans, but you are not one of them.
-    You are a shadowling, and you are to ascend at all costs.
+    You are a [color = {$subColor}]shadowling[/color], and you are to ascend at all costs.
     Check the guidebook for more information.
 
-shadowling-role-greeting-short =
-    You are a shadowling who has awakened in the body of {$name}.
-
 thrall-role-greeting =
-    You are a thrall.
-    Help your Shadowling ascend by any means necessary.
+    You are a [color = {$subColor}]thrall[/color].
+    { $hasOwner ->
+        [true] Your mind owned by [color = {$subColor}]Shadowling[/color], [color = {$subColor}]{$owner}[/color].
+        *[other] Your mind [color = {$subColor}]not[/color] owned.
+    }
+    Help your [color = {$subColor}]Shadowling[/color] ascend by any means necessary.
 
 shadowling-briefing =
     Shed from this lesser form and start your path to ascension.
 
 thrall-briefing =
     You are no longer bound to your old beliefs.
-    Help your shadowling ascend at all costs.
+    { $hasOwner ->
+        [true] Help your [color = {$subColor}]Shadowling[/color], [color = {$subColor}]{$owner}[/color] ascend at all costs.
+        *[other] Help your [color = {$subColor}]Shadowling[/color] ascend at all costs.
+    }
 
 objective-issuer-shadowling = Shadowling

@@ -9,6 +9,7 @@
   name: apprentice
   suffix: Human, Apprentice
   components:
+  - type: Familiar
   - type: RandomHumanoidAppearance
     randomizeName: false
   - type: RandomMetadata

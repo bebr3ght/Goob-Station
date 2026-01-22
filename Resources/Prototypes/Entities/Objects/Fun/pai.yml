@@ -150,6 +150,7 @@
     context: "human"
   - type: PAI
   - type: BlockMovement
+  - type: Familiar
   - type: ToggleableGhostRole
     examineTextMindPresent: pai-system-pai-installed
     examineTextMindSearching: pai-system-still-searching

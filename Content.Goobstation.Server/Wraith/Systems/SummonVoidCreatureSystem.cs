@@ -4,6 +4,7 @@ using Content.Goobstation.Shared.Wraith.Events;
 using Content.Server.Actions;
 using Content.Server.Mind;
 using Content.Shared._White.RadialSelector;
+using Content.Shared.Bible.Components;
 using Robust.Server.GameObjects;
 using Robust.Shared.Prototypes;
 
@@ -38,7 +39,10 @@ public sealed class SummonVoidCreatureSystem : EntitySystem
 
     private void OnSummonVoidCreature(Entity<SummonVoidCreatureComponent> ent, ref SummonVoidCreatureEvent args)
     {
-        SpawnAtPosition(ent.Comp.SummonId, Transform(ent.Owner).Coordinates);
+        var entity = SpawnAtPosition(ent.Comp.SummonId, Transform(ent.Owner).Coordinates);
+
+        var hasOwner = EnsureComp<HasOwnerComponent>(entity);
+        hasOwner.OwnerMob = args.Performer;
 
         args.Handled = true;
     }
@@ -63,6 +67,11 @@ public sealed class SummonVoidCreatureSystem : EntitySystem
 
         EntityManager.CopyComponents(ent.Owner, newForm);
         RemComp<ChooseVoidCreatureComponent>(newForm);
+        if (TryComp<HasOwnerComponent>(ent, out var hasOwner))
+        {
+            var newFormOwner = EnsureComp<HasOwnerComponent>(newForm);
+            newFormOwner.OwnerMob = hasOwner.OwnerMob; // bro why EntityManager.CopyComponents don't copy this component
+        }
 
         _ui.CloseUi(ent.Owner, RadialSelectorUiKey.Key, args.Actor);
         Del(ent.Owner);

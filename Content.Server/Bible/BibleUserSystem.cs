@@ -35,7 +35,6 @@
 //
 // using Content.Goobstation.Common.Religion;
 // using Content.Goobstation.Shared.Bible;
-// using Content.Server.Antag;
 // using Content.Server.Ghost.Roles.Events;
 // using Content.Server.Popups;
 // using Content.Shared._Shitmed.Damage;
@@ -56,15 +55,14 @@
 // using Content.Shared.Verbs;
 // using Robust.Shared.Audio.Systems;
 // using Robust.Shared.Player;
-// using Robust.Shared.Prototypes;
 // using Robust.Shared.Random;
+// using Content.Shared.Eye;
 //
 // namespace Content.Server.Bible
 // {
 //     public sealed class BibleSystem : EntitySystem
 //     {
 //         [Dependency] private readonly IRobustRandom _random = default!;
-//         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
 //         [Dependency] private readonly ActionBlockerSystem _blocker = default!;
 //         [Dependency] private readonly DamageableSystem _damageableSystem = default!;
 //         [Dependency] private readonly InventorySystem _invSystem = default!;
@@ -74,13 +72,14 @@
 //         [Dependency] private readonly SharedAudioSystem _audio = default!;
 //         [Dependency] private readonly UseDelaySystem _delay = default!;
 //         [Dependency] private readonly SharedTransformSystem _transform = default!;
-//         [Dependency] private readonly AntagSelectionSystem _antag = default!;
+//         [Dependency] private readonly SharedEyeSystem _eye = default!;
 //
 //         public override void Initialize()
 //         {
 //             base.Initialize();
 //
 //             SubscribeLocalEvent<BibleComponent, AfterInteractEvent>(OnAfterInteract);
+//             SubscribeLocalEvent<BibleUserComponent, ComponentInit>(ViewFracture);
 //             SubscribeLocalEvent<SummonableComponent, GetVerbsEvent<AlternativeVerb>>(AddSummonVerb);
 //             SubscribeLocalEvent<SummonableComponent, GetItemActionsEvent>(GetSummonAction);
 //             SubscribeLocalEvent<SummonableComponent, SummonActionEvent>(OnSummon);
@@ -249,10 +248,10 @@
 //         /// </summary>
 //         private void OnFamiliarDeath(EntityUid uid, FamiliarComponent component, MobStateChangedEvent args)
 //         {
-//             if (args.NewMobState != MobState.Dead || component.SpawnedFromItem == null)
+//             if (args.NewMobState != MobState.Dead || component.Source == null)
 //                 return;
 //
-//             var source = component.SpawnedFromItem;
+//             var source = component.Source;
 //             if (source != null && HasComp<SummonableComponent>(source))
 //             {
 //                 _addQueue.Enqueue(source.Value);
@@ -269,7 +268,6 @@
 //                 return;
 //
 //             component.Source = parent;
-//             component.Master = summonable.Master;
 //             summonable.Summon = uid;
 //         }
 //
@@ -290,7 +288,6 @@
 //             // Make this familiar the component's summon
 //             var familiar = Spawn(component.SpecialItemPrototype, position.Coordinates);
 //             component.Summon = familiar;
-//             component.Master = user;
 //
 //             // If this is going to use a ghost role mob spawner, attach it to the bible.
 //             if (HasComp<GhostRoleMobSpawnerComponent>(familiar))
@@ -300,6 +297,12 @@
 //             }
 //             component.AlreadySummoned = true;
 //             _actionsSystem.RemoveAction(user, component.SummonActionEntity);
+//         }
+//
+//         private void ViewFracture(Entity<BibleUserComponent> ent, ref ComponentInit args)
+//         {
+//             if (TryComp<EyeComponent>(ent, out var eye))
+//             _eye.SetVisibilityMask(ent, eye.VisibilityMask | (int) VisibilityFlags.EldritchInfluenceSpent);
 //         }
 //     }
 // }

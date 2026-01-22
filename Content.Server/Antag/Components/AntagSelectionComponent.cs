@@ -346,6 +346,9 @@ public partial struct BriefingData
     [DataField]
     public Color? Color;
 
+    [DataField]
+    public Color? SubColor;
+
     /// <summary>
     /// The sound played.
     /// </summary>

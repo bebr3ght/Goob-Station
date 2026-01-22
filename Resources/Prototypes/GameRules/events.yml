@@ -442,6 +442,7 @@
       briefing:
         text: ninja-role-greeting
         color: Green
+        subColor: SpringGreen
         sound: /Audio/Misc/ninja_greeting.ogg
       components:
       - type: SpaceNinja
@@ -818,6 +819,7 @@
       briefing:
         text: zombie-patientzero-role-greeting
         color: Plum
+        subColor: ForestGreen
         sound: "/Audio/Ambience/Antag/zombie_start.ogg"
       components:
       - type: PendingZombie #less time to prepare than normal

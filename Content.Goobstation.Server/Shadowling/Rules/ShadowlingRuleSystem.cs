@@ -12,6 +12,7 @@ using Content.Server.GameTicking.Rules;
 using Content.Server.Mind;
 using Content.Server.Roles;
 using Content.Server.Zombies;
+using Content.Shared.Bible.Components;
 using Content.Shared.GameTicking.Components;
 using Content.Shared.Mobs.Systems;
 using Content.Shared.NPC.Prototypes;
@@ -84,7 +85,23 @@ public sealed class ShadowlingRuleSystem : GameRuleSystem<ShadowlingRuleComponen
     {
         var ent = args.Mind.Comp.OwnedEntity;
         var sling = HasComp<ShadowlingComponent>(ent);
-        args.Briefing = Loc.GetString(sling ? "shadowling-briefing" : "thrall-briefing");
+        var ownerName = "Undefined";
+        var hasOwner = false;
+
+        if (TryComp<HasOwnerComponent>(ent, out var hasOwnerComp))
+        {
+            if (hasOwnerComp.OwnerMob != null)
+            {
+                ownerName = Name(hasOwnerComp.OwnerMob.Value);
+                hasOwner = true;
+            }
+        }
+
+        args.Briefing = Loc.GetString(sling ? "shadowling-briefing" : "thrall-briefing",
+            ("subColor", Color.Purple),
+            ("owner", ownerName),
+            ("hasOwner", hasOwner));
+        args.BriefingColor = Color.MediumPurple;
     }
 
     private void OnSelectAntag(EntityUid uid, ShadowlingRuleComponent comp, ref AfterAntagEntitySelectedEvent args)
@@ -102,7 +119,7 @@ public sealed class ShadowlingRuleSystem : GameRuleSystem<ShadowlingRuleComponen
         _npc.RemoveFaction(target, _nanotrasenFactionId, false);
         _npc.AddFaction(target, _shadowlingFactionId);
 
-        var briefing = Loc.GetString("shadowling-role-greeting");
+        var briefing = Loc.GetString("shadowling-role-greeting", ("subColor", Color.Purple));
 
         _antag.SendBriefing(target, briefing, Color.MediumPurple, _briefingSound);
 

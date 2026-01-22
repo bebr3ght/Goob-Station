@@ -137,6 +137,7 @@
   save: false
   components:
     - type: LagCompensation
+    - type: Familiar
     - type: GhostRole
       allowMovement: true
       allowSpeech: true

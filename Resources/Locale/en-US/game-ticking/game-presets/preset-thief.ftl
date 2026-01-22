@@ -7,9 +7,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 thief-role-greeting-human =
-    You are criminal scum, a kleptomaniac
+    You are [color={$subColor}]criminal scum[/color], a [color={$subColor}]kleptomaniac[/color]
     previously arrested and on parole for petty theft.
-    You need to add more to your collection.
+    You need to add more to [color={$subColor}]your collection[/color].
     You were forcibly given a pacifism implant after your last arrest,
     but that can't stop you from getting your fix by any means necessary.
 

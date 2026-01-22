@@ -22,6 +22,7 @@ using Content.Shared.Damage;
 using Content.Shared.Destructible;
 using Content.Shared.Explosion.Components;
 using Content.Goobstation.Maths.FixedPoint;
+using Content.Shared.Bible.Components;
 using Content.Shared.Mobs.Systems;
 using Content.Shared.Weapons.Melee;
 using Robust.Shared.Prototypes;
@@ -67,6 +68,9 @@ public sealed class BlobFactorySystem : EntitySystem
         var xform = Transform(uid);
 
         var blobbernaut = Spawn(component.BlobbernautId, xform.Coordinates);
+        var hasOwner = EnsureComp<HasOwnerComponent>(blobbernaut);
+        hasOwner.OwnerMob = args.Owner;
+        hasOwner.OwnerItem = uid;
 
         component.Blobbernaut = blobbernaut;
         if (TryComp<BlobbernautComponent>(blobbernaut, out var blobbernautComponent))

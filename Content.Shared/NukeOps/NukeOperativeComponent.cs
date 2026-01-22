@@ -93,4 +93,8 @@ public sealed partial class NukeOperativeComponent : Component
     /// </summary>
     [DataField("syndStatusIcon", customTypeSerializer: typeof(PrototypeIdSerializer<FactionIconPrototype>))]
     public string SyndStatusIcon = "SyndicateFaction";
+
+    // Goobstation - briefing & greeting improve
+    [ViewVariables(VVAccess.ReadWrite)]
+    public EntityUid? Commander;
 }

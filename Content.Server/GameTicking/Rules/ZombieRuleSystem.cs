@@ -125,7 +125,7 @@ public sealed class ZombieRuleSystem : GameRuleSystem<ZombieRuleComponent>
     private void OnGetBriefing(Entity<InitialInfectedRoleComponent> role, ref GetBriefingEvent args)
     {
         if (!_roles.MindHasRole<ZombieRoleComponent>(args.Mind.Owner))
-            args.Append(Loc.GetString("zombie-patientzero-role-greeting"));
+            args.Append(Loc.GetString("zombie-patientzero-role-greeting", ("subColor", Color.ForestGreen)), Color.Plum);
     }
 
     private void OnGetBriefing(Entity<ZombieRoleComponent> role, ref GetBriefingEvent args)

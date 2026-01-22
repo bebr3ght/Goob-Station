@@ -6,6 +6,7 @@
 
 using Content.Server.Actions;
 using Content.Server.DoAfter;
+using Content.Server.Roles;
 using Content.Server.Station.Components;
 using Content.Server.Station.Systems;
 using Content.Shared._Shitmed.Antags.Abductor;
@@ -19,6 +20,8 @@ using Content.Shared.Silicons.StationAi;
 using Content.Shared.UserInterface;
 using Content.Shared.Hands.Components;
 using Content.Shared.Hands.EntitySystems;
+using Content.Shared.Procedural.PostGeneration;
+using Content.Shared.Roles;
 using Robust.Server.GameObjects;
 using Content.Shared.Tag;
 using Robust.Server.Containers;
@@ -45,6 +48,7 @@ public sealed partial class AbductorSystem : SharedAbductorSystem
     {
         SubscribeLocalEvent<AbductorHumanObservationConsoleComponent, BeforeActivatableUIOpenEvent>(OnBeforeActivatableUIOpen);
         SubscribeLocalEvent<AbductorHumanObservationConsoleComponent, ActivatableUIOpenAttemptEvent>(OnActivatableUIOpenAttempt);
+        SubscribeLocalEvent<AbductorComponent, GetBriefingEvent>(OnGetBriefing);
         Subs.BuiEvents<AbductorHumanObservationConsoleComponent>(AbductorCameraConsoleUIKey.Key, subs => subs.Event<AbductorBeaconChosenBuiMsg>(OnAbductorBeaconChosenBuiMsg));
         InitializeActions();
         InitializeGizmo();
@@ -52,6 +56,50 @@ public sealed partial class AbductorSystem : SharedAbductorSystem
         InitializeVest();
         InitializeVictim();
         base.Initialize();
+    }
+
+    // Goobstation - briefing & greeting improve
+    private bool TryFindTeammates(EntityUid mind, out List<string> teammates)
+    {
+        teammates = new List<string>();
+
+        var query = EntityQueryEnumerator<AbductorComponent>();
+        while (query.MoveNext(out var uid, out _))
+        {
+            if (!_mind.TryGetMind(uid, out var mindId, out var mindQuery))
+                continue;
+
+            foreach (var roleId in mindQuery.MindRoles)
+            {
+                if (TryComp<MindRoleComponent>(roleId, out var role) &&
+                    (role.AntagPrototype == "AbductorScientistAntag" || role.AntagPrototype == "AbductorAgentAntag") &&
+                    mindQuery.OwnedEntity.HasValue &&
+                    mind != mindId)
+                {
+                    teammates.Add(Name(mindQuery.OwnedEntity.Value));
+                }
+            }
+        }
+
+        return teammates.Count > 0;
+    }
+
+    private void OnGetBriefing(Entity<AbductorComponent> role, ref GetBriefingEvent args)
+    {
+        var hasTeammates = TryFindTeammates(args.Mind, out var teammates);
+
+        foreach (var roleId in args.Mind.Comp.MindRoles)
+        {
+            if (TryComp<MindRoleComponent>(roleId, out var mindRole))
+            {
+                if (mindRole.RoleType != null && mindRole.RoleType.Value == "TeamAntagonist" && teammates != null)
+                {
+                    var teammatesString = "• " + string.Join("\n • ", teammates);
+
+                    args.Append(Loc.GetString("abductor-briefing", ("hasTeammates", hasTeammates), ("teammates", teammatesString), ("subColor", Color.LawnGreen)), Color.Green);
+                }
+            }
+        }
     }
 
     private void OnAbductorBeaconChosenBuiMsg(Entity<AbductorHumanObservationConsoleComponent> ent, ref AbductorBeaconChosenBuiMsg args)

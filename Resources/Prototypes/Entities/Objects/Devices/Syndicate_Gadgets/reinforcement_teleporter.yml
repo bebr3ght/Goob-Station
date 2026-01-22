@@ -82,6 +82,15 @@
     sprite: Objects/Devices/communication.rsi
     layers:
     - state: radio
+
+# Goobstation - briefing for familiars. Make UI components in another prototype
+- type: entity
+  parent: ReinforcementRadio
+  abstract: true
+  id: ReinforcementRadioInterface
+  name: syndicate reinforcement radio
+  description: Call in a syndicate agent of questionable quality, instantly! Only basic equipment provided.
+  components:
   - type: UserInterface
     interfaces:
       enum.GhostRoleRadioUiKey.Key:
@@ -90,7 +99,7 @@
     key: enum.GhostRoleRadioUiKey.Key
 
 - type: entity
-  parent: ReinforcementRadio
+  parent: ReinforcementRadioInterface
   id: ReinforcementRadioSyndicate
   name: syndicate reinforcement radio
   description: Call in a syndicate agent of questionable quality, instantly!
@@ -99,8 +108,6 @@
     name: ghost-role-information-syndicate-reinforcement-spy-name
     description: ghost-role-information-syndicate-reinforcement-spy-description
     rules: ghost-role-information-syndicate-reinforcement-rules
-    mindRoles:
-    - MindRoleGhostRoleFamiliar
     raffle:
       settings: default
     requirements: # Goobstation - ghost roles requirements
@@ -109,6 +116,7 @@
   - type: GhostRoleMobSpawner
     prototype: MobHumanSyndicateAgentSpy
     selectablePrototypes: ["SyndicateAgentMedic", "SyndicateAgentSpy", "SyndicateAgentThief"]
+    assignOwners: true
 
 # Goobstation - Nukeop reinforcement
 - type: entity
@@ -123,7 +131,7 @@
     description: ghost-role-information-nukeop-reinforcement-description
     rules: ghost-role-information-nukeop-reinforcement-rules
     mindRoles:
-    - MindRoleGhostRoleTeamAntagonist
+    - MindRoleGhostRoleNukeopsReinforcement
     raffle:
       settings: default
     requirements: # Goobstation - ghost roles requirements
@@ -131,9 +139,10 @@
       time: 18000 #5 hours
   - type: GhostRoleMobSpawner
     prototype: MobHumanSyndicateAgentNukeops
+    assignOwners: true
 
 - type: entity
-  parent: ReinforcementRadio
+  parent: ReinforcementRadioInterface
   id: ReinforcementRadioSyndicateAncestor
   name: syndicate genetic ancestor reinforcement radio
   description: Calls in a specially trained ancestor of your choosing to assist you.
@@ -142,8 +151,6 @@
     name: ghost-role-information-syndicate-monkey-reinforcement-name
     description: ghost-role-information-syndicate-monkey-reinforcement-description
     rules: ghost-role-information-syndicate-reinforcement-rules
-    mindRoles:
-    - MindRoleGhostRoleFamiliar
     raffle:
       settings: default
     requirements: # Goobstation - ghost roles requirements
@@ -152,17 +159,21 @@
   - type: GhostRoleMobSpawner
     prototype: MobMonkeySyndicateAgent
     selectablePrototypes: ["SyndicateMonkey", "SyndicateKobold"]
+    assignOwners: true
 
 - type: entity
-  parent: ReinforcementRadioSyndicateAncestor
+  parent: ReinforcementRadioInterface
   id: ReinforcementRadioSyndicateAncestorNukeops # Reinforcement radio exclusive to nukeops uplink
   suffix: NukeOps
   components:
   - type: GhostRole
     rules: ghost-role-information-nukeop-reinforcement-rules
+    mindRoles:
+    - MindRoleGhostRoleNukeopsReinforcement
   - type: GhostRoleMobSpawner
     prototype: MobMonkeySyndicateAgentNukeops
     selectablePrototypes: ["SyndicateMonkeyNukeops", "SyndicateKoboldNukeops"]
+    assignOwners: true
 
 - type: entity
   parent: ReinforcementRadio
@@ -175,7 +186,7 @@
     description: ghost-role-information-SyndiCat-description
     rules: ghost-role-information-syndicate-reinforcement-rules
     mindRoles:
-    - MindRoleGhostRoleFamiliar
+    - MindRoleGhostRoleFamiliarReinforcement
     raffle:
       settings: default
     requirements: # Goobstation - ghost roles requirements
@@ -183,6 +194,7 @@
       time: 18000 #5 hours
   - type: GhostRoleMobSpawner
     prototype: MobCatSyndy
+    assignOwners: true
   - type: EmitSoundOnUse
     sound: /Audio/Animals/cat_meow.ogg
 

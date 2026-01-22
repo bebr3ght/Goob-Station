@@ -71,6 +71,7 @@
   - type: Grammar
     attributes:
       gender: male
+  - type: Familiar
   - type: GhostRole
     allowMovement: true
     allowSpeech: true
@@ -285,6 +286,7 @@
   - type: Grammar
     attributes:
       gender: male
+  - type: Familiar
   - type: GhostRole
     allowMovement: true
     allowSpeech: true
@@ -292,6 +294,8 @@
     name: ghostrole-rustwalker-name
     description: ghostrole-rustwalker-desc
     rules: ghostrole-ghoul-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: short
   - type: CollectiveMind

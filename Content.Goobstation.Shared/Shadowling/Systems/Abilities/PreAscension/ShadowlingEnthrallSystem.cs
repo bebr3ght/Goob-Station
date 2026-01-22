@@ -10,6 +10,7 @@ using Content.Shared.Actions;
 using Content.Shared.DoAfter;
 using Content.Shared.Mindshield.Components;
 using Content.Shared.Popups;
+using Robust.Shared.Network;
 
 namespace Content.Goobstation.Shared.Shadowling.Systems.Abilities.PreAscension;
 

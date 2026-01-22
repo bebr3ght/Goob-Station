@@ -23,6 +23,9 @@ using Robust.Shared.Map;
 using Robust.Shared.Player;
 using Robust.Shared.Serialization.Manager;
 using System.Numerics;
+using Content.Server.Ghost.Roles;
+using Content.Server.Roles;
+using Content.Shared.Bible.Components;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Random; // Goobstation - Buff carp rift
@@ -37,11 +40,12 @@ public sealed class DragonRiftSystem : EntitySystem
 {
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly DragonSystem _dragon = default!;
-    [Dependency] private readonly IRobustRandom _random = default!; // Goobstation - Buff carp rift
     [Dependency] private readonly ISerializationManager _serManager = default!;
     [Dependency] private readonly NavMapSystem _navMap = default!;
     [Dependency] private readonly NPCSystem _npc = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
+
+    [Dependency] private readonly IRobustRandom _random = default!; // Goobstation - Buff carp rift
 
     public override void Initialize()
     {
@@ -113,8 +117,17 @@ public sealed class DragonRiftSystem : EntitySystem
                     Dirty(ent, spawnedSprite);
                 }
 
+
                 if (comp.Dragon != null)
-                    _npc.SetBlackboard(ent, NPCBlackboard.FollowTarget, new EntityCoordinates(comp.Dragon.Value, Vector2.Zero));
+                {
+                    _npc.SetBlackboard(ent,
+                        NPCBlackboard.FollowTarget,
+                        new EntityCoordinates(comp.Dragon.Value, Vector2.Zero));
+
+                    // Goobstation - briefing for familiars
+                    var ev = new EnsureOwnerEvent(ent, comp.Dragon, uid);
+                    RaiseLocalEvent(ref ev);
+                }
             }
         }
     }

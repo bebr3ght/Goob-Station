@@ -28,4 +28,8 @@ public sealed partial class RevolutionaryRoleComponent : BaseMindRoleComponent
     /// </summary>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public uint ConvertedCount = 0;
+
+    // Goobstation - briefing & greeting improve
+    [DataField]
+    public EntityUid? MasterHeadRevolutionary;
 }

@@ -68,7 +68,6 @@ public sealed class WizardRuleSystem : GameRuleSystem<WizardRuleComponent>
         SubscribeLocalEvent<WizardRuleComponent, AfterAntagEntitySelectedEvent>(OnAfterAntagSelected);
 
         SubscribeLocalEvent<WizardRoleComponent, GetBriefingEvent>(OnWizardGetBriefing);
-        SubscribeLocalEvent<ApprenticeRoleComponent, GetBriefingEvent>(OnApprenticeGetBriefing);
 
         SubscribeLocalEvent<WizardComponent, MobStateChangedEvent>(OnStateChanged);
         SubscribeLocalEvent<WizardComponent, ComponentRemove>(OnRemove);
@@ -266,11 +265,6 @@ public sealed class WizardRuleSystem : GameRuleSystem<WizardRuleComponent>
     private void OnWizardGetBriefing(Entity<WizardRoleComponent> ent, ref GetBriefingEvent args)
     {
         args.Append(Loc.GetString("wizard-role-briefing"));
-    }
-
-    private void OnApprenticeGetBriefing(Entity<ApprenticeRoleComponent> ent, ref GetBriefingEvent args)
-    {
-        args.Append(Loc.GetString("apprentice-role-briefing"));
     }
 
     private void OnAfterAntagSelected(Entity<WizardRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)

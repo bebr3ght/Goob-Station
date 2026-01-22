@@ -8,6 +8,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using System.Linq;
+using Content.Shared.Bible.Components;
 using Robust.Server.GameObjects;
 
 namespace Content.Goobstation.Server.Wraith.Systems;
@@ -23,8 +24,6 @@ public sealed class VoidPortalSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<VoidPortalComponent, MapInitEvent>(OnMapInit);
     }
 
     public override void Update(float frameTime)
@@ -41,12 +40,12 @@ public sealed class VoidPortalSystem : EntitySystem
         }
     }
 
-    private void OnMapInit(Entity<VoidPortalComponent> ent, ref MapInitEvent args)
+    public void StartSpawnCycle(EntityUid uid, VoidPortalComponent component)
     {
-        ent.Comp.CurrentPower = ent.Comp.ExtraPower; // start with initial power
-        TrySpawn(ent.Owner, ent);
+        component.CurrentPower = component.ExtraPower; // start with initial power
+        TrySpawn(uid, component);
 
-        ent.Comp.Accumulator = _timing.CurTime + ent.Comp.SpawnInterval;
+        component.Accumulator = _timing.CurTime + component.SpawnInterval;
     }
 
     private void UpdatePortal(EntityUid uid, VoidPortalComponent portal)
@@ -122,6 +121,12 @@ public sealed class VoidPortalSystem : EntitySystem
             }
         }
 
-        Spawn(protoToSpawn, spawnCoords);
+        var entity = Spawn(protoToSpawn, spawnCoords);
+        var hasOwner = EnsureComp<HasOwnerComponent>(entity);
+        if (TryComp<HasOwnerComponent>(uid, out var portalHasOwner))
+        {
+            hasOwner.OwnerMob = portalHasOwner.OwnerMob;
+            hasOwner.OwnerItem = uid;
+        }
     }
 }

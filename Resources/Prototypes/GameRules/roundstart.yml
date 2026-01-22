@@ -405,6 +405,7 @@
       briefing:
         text: head-rev-role-greeting
         color: CornflowerBlue
+        subColor: AliceBlue
         sound: "/Audio/Ambience/Antag/headrev_start.ogg"
       startingGear: HeadRevGear
       components:
@@ -505,6 +506,7 @@
       briefing:
         text: zombie-patientzero-role-greeting
         color: Plum
+        subColor: ForestGreen
         sound: "/Audio/Ambience/Antag/zombie_start.ogg"
       components:
       - type: PendingZombie

@@ -25,6 +25,7 @@
     antagPrototype: Apprentice
     exclusiveAntag: true
     roleType: Familiar
+    subtype: role-subtype-wizard
   - type: ApprenticeRole
 
 - type: antag

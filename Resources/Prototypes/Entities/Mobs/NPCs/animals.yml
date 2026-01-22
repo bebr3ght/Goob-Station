@@ -1880,6 +1880,16 @@
   - type: VentCrawler # goobstation - Ventcrawl
   - type: AutoTraitor
     profile: TraitorReinforcement
+  - type: Familiar
+  - type: GhostRole
+    prob: 0.05
+    makeSentient: true
+    name: ghost-role-information-monkey-name
+    description: ghost-role-information-monkey-description
+    rules: ghost-role-information-syndicate-reinforcement-rules
+    mindRoles: [ ]
+    raffle:
+      settings: default
 
 - type: entity
   id: MobMonkeySyndicateAgentNukeops # Reinforcement exclusive to nukeops uplink
@@ -1888,6 +1898,16 @@
   components:
   - type: VentCrawler # goobstation - Ventcrawl
   - type: NukeOperative
+  - type: Familiar
+  - type: GhostRole
+    prob: 0.05
+    makeSentient: true
+    name: ghost-role-information-monkey-name
+    description: ghost-role-information-monkey-description
+    rules: ghost-role-information-nukeop-reinforcement-rules
+    mindRoles: [ ]
+    raffle:
+      settings: default
 
 - type: entity
   name: kobold
@@ -2015,6 +2035,16 @@
     # make the player a traitor once its taken
   - type: AutoTraitor
     profile: TraitorReinforcement
+  - type: Familiar
+  - type: GhostRole
+    prob: 1
+    makeSentient: true
+    name: ghost-role-information-monkey-name
+    description: ghost-role-information-monkey-description
+    rules: ghost-role-information-syndicate-reinforcement-rules
+    mindRoles: [ ]
+    raffle:
+      settings: default
 
 - type: entity
   id: MobKoboldSyndicateAgentNukeops # Reinforcement exclusive to nukeops uplink
@@ -3596,7 +3626,7 @@
     description: ghost-role-information-SyndiCat-description
     rules: ghost-role-information-SyndiCat-rules
     mindRoles:
-    - MindRoleGhostRoleTeamAntagonist
+    - MindRoleGhostRoleFamiliarReinforcement
     raffle:
       settings: default
   - type: GhostTakeoverAvailable

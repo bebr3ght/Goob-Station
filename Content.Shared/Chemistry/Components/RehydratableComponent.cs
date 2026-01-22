@@ -26,6 +26,7 @@
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Chemistry.Reagent;
 using Content.Goobstation.Maths.FixedPoint;
+using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Chemistry.Components;
@@ -54,6 +55,13 @@ public sealed partial class RehydratableComponent : Component
     /// </summary>
     [DataField(required: true)]
     public List<EntProtoId> PossibleSpawns = new();
+
+    // Goobstation - briefing for familiars
+    /// <summary>
+    /// Contains the user that last interacted with the entity.
+    /// </summary>
+    [DataField]
+    public EntityUid? LastUser;
 }
 
 /// <summary>

@@ -331,7 +331,10 @@ public sealed partial class AntagSelectionSystem
         if (session == null || data == null)
             return;
 
-        var text = data.Value.Text == null ? string.Empty : Loc.GetString(data.Value.Text);
+        var text = data.Value.Text != null
+            ? Loc.GetString(data.Value.Text,
+                ("subColor", data.Value.SubColor ?? data.Value.Color ?? Color.Orange))
+            : string.Empty;
         SendBriefing(session, text, data.Value.Color, data.Value.Sound);
     }
 

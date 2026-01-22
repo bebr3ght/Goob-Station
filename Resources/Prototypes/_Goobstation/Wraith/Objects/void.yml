@@ -45,6 +45,7 @@
     radius: 5
     softness: 1
   - type: Polymorphable
+  - type: Familiar
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -52,6 +53,8 @@
     name: ghost-role-information-nascent-name
     description: ghost-role-information-nascent-description
     rules: ghost-role-information-nascent-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
     raffle:
       settings: default
   - type: GhostTakeoverAvailable

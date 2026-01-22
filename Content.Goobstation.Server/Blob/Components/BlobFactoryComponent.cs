@@ -41,4 +41,10 @@ public sealed partial class BlobFactoryComponent : Component
 
 public sealed class ProduceBlobbernautEvent : EntityEventArgs
 {
+    public EntityUid Owner;
+
+    public ProduceBlobbernautEvent(EntityUid owner)
+    {
+        Owner = owner;
+    }
 }

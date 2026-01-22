@@ -43,6 +43,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using System.Linq;
+using Content.Server._Goobstation.Familiar;
 using Content.Server.Administration.Logs;
 using Content.Server.EUI;
 using Content.Server.Ghost.Roles.Components;
@@ -74,9 +75,11 @@ using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 using Content.Server.Popups;
+using Content.Shared.Bible.Components;
 using Content.Shared.Verbs;
 using Robust.Shared.Collections;
 using Content.Shared.Ghost.Roles.Components;
+using Content.Shared.Popups;
 
 namespace Content.Server.Ghost.Roles;
 
@@ -95,6 +98,8 @@ public sealed class GhostRoleSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly PopupSystem _popupSystem = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
+
+    [Dependency] private readonly IComponentFactory _componentFactory = default!;
 
     private uint _nextRoleIdentifier;
     private bool _needsUpdateGhostRoleCount = true;
@@ -133,6 +138,10 @@ public sealed class GhostRoleSystem : EntitySystem
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GetVerbsEvent<Verb>>(OnVerb);
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GhostRoleRadioMessage>(OnGhostRoleRadioMessage);
         _playerManager.PlayerStatusChanged += PlayerStatusChanged;
+
+        // Goobstation
+        SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GetVerbsEvent<AlternativeVerb>>(AddVerb);
+        // SubscribeLocalEvent<SpawnCooldownComponent, ComponentInit>(OnSpawnCooldownInit);
     }
 
     private void OnMobStateChanged(Entity<GhostTakeoverAvailableComponent> component, ref MobStateChangedEvent args)
@@ -230,6 +239,7 @@ public sealed class GhostRoleSystem : EntitySystem
 
         UpdateGhostRoleCount();
         UpdateRaffles(frameTime);
+        // UpdateSpawnCooldown(frameTime); // Goobstation - briefing for familiars
     }
 
     /// <summary>
@@ -571,6 +581,10 @@ public sealed class GhostRoleSystem : EntitySystem
 
         _roleSystem.MindAddRoles(newMind.Owner, role.MindRoles, newMind.Comp);
 
+        // Goobstation - briefing for familiars
+        // var ev = new AfterMindRolesBriefingEvent(newMind);
+        // RaiseLocalEvent(mob, ev);
+
         if (_roleSystem.MindHasRole<GhostRoleMarkerRoleComponent>(newMind!, out var markerRole))
             markerRole.Value.Comp2.Name = role.RoleName;
     }
@@ -719,6 +733,8 @@ public sealed class GhostRoleSystem : EntitySystem
 
     private void OnRoleStartup(Entity<GhostRoleComponent> ent, ref ComponentStartup args)
     {
+        if (ent.Comp.RegisterAfterInteract)
+            return;
         RegisterGhostRole(ent);
     }
 
@@ -730,7 +746,8 @@ public sealed class GhostRoleSystem : EntitySystem
     private void OnSpawnerTakeRole(EntityUid uid, GhostRoleMobSpawnerComponent component, ref TakeGhostRoleEvent args)
     {
         if (!TryComp(uid, out GhostRoleComponent? ghostRole) ||
-            !CanTakeGhost(uid, ghostRole))
+            !CanTakeGhost(uid, ghostRole) ||
+            component.AlreadySummoned)
         {
             args.TookRole = false;
             return;
@@ -745,12 +762,15 @@ public sealed class GhostRoleSystem : EntitySystem
         var spawnedEvent = new GhostRoleSpawnerUsedEvent(uid, mob);
         RaiseLocalEvent(mob, spawnedEvent, true); // Goob Edit: Broadcast
 
+        SetSpawnedFrom(mob, component.OwnerMob, component.OwnerItem); // Goobstation - briefing for familiars
+
         if (ghostRole.MakeSentient)
             MakeSentientCommand.MakeSentient(mob, EntityManager, ghostRole.AllowMovement, ghostRole.AllowSpeech);
 
         EnsureComp<MindContainerComponent>(mob);
 
         GhostRoleInternalCreateMindAndTransfer(args.Player, uid, mob, ghostRole);
+        UnregisterGhostRole((uid, ghostRole));
 
         if (++component.CurrentTakeovers < component.AvailableTakeovers)
         {
@@ -758,7 +778,10 @@ public sealed class GhostRoleSystem : EntitySystem
             return;
         }
 
+        // Goobstation - briefing for familiars
+        component.SpawnedEntity = uid;
         ghostRole.Taken = true;
+        component.AlreadySummoned = true;
 
         if (component.DeleteOnSpawn)
             QueueDel(uid);
@@ -799,6 +822,40 @@ public sealed class GhostRoleSystem : EntitySystem
         UnregisterGhostRole((uid, ghostRole));
 
         args.TookRole = true;
+    }
+
+    private void AddVerb(EntityUid uid, GhostRoleMobSpawnerComponent component, GetVerbsEvent<AlternativeVerb> args)
+    {
+        if (!args.CanInteract || !args.CanAccess || !component.Repeatable || component.AlreadySummoned || component.Prototype == null)
+            return;
+
+        if (component.RequiredComponents.Count > 0)
+        {
+            foreach (var (name, _) in component.RequiredComponents)
+            {
+                var newComp = (Component) _componentFactory.GetComponent(name);
+
+                if (!HasComp(args.User, newComp.GetType()))
+                    return;
+            }
+        }
+
+        // Goobstation - briefing for familiars
+        AlternativeVerb verb = new()
+        {
+            Act = () =>
+            {
+                if (!TryComp<GhostRoleComponent>(uid, out var ghostRole))
+                    return;
+
+                SetSpawnedFrom(uid, args.User, args.Target);
+                RegisterGhostRole((uid, ghostRole));
+                _popupSystem.PopupEntity(Loc.GetString("summon-requested"), args.User, args.User, PopupType.Medium);
+            },
+            Text = Loc.GetString("summon-verb"),
+            Priority = 2
+        };
+        args.Verbs.Add(verb);
     }
 
     private void OnVerb(EntityUid uid, GhostRoleMobSpawnerComponent component, GetVerbsEvent<Verb> args)
@@ -877,6 +934,59 @@ public sealed class GhostRoleSystem : EntitySystem
     {
         role.Taken = taken;
     }
+
+    #region Goobstation
+    // private void OnSpawnCooldownInit(EntityUid uid, SpawnCooldownComponent component, ComponentInit args)
+    // {
+    //     if (!TryComp<GhostRoleMobSpawnerComponent>(uid, out var spawner))
+    //         return;
+    //     component.Cooldown = spawner.SpawnCooldown;
+    // }
+
+    /// <summary>
+    /// Assigns entities that created the uid.
+    /// </summary>
+    /// <param name="uid">Created entity</param>
+    /// <param name="creature">Creature that created this entity</param>
+    /// <param name="item">Item that created this entity</param>
+    public void SetSpawnedFrom(EntityUid uid,
+        EntityUid? creature = null,
+        EntityUid? item = null)
+    {
+        var component = EnsureComp<HasOwnerComponent>(uid);
+        if (creature != null)
+            component.OwnerMob = creature;
+        if (item != null)
+            component.OwnerItem = item;
+    }
+
+    // /// <summary>
+    // /// Update for counting down the cooldown until creature respawn is possible
+    // /// </summary>
+    // /// <param name="frameTime"></param>
+    // private void UpdateSpawnCooldown(float frameTime)
+    // {
+    //     var query = EntityQueryEnumerator<GhostRoleMobSpawnerComponent, GhostRoleComponent, SpawnCooldownComponent>();
+    //     while (query.MoveNext(out var uid, out var spawner, out var ghostRole, out var repeat))
+    //     {
+    //         if (!spawner.Repeatable)
+    //             continue;
+    //
+    //         repeat.Accumulator += frameTime;
+    //
+    //         if (repeat.Accumulator < repeat.Cooldown)
+    //             continue;
+    //
+    //         if (spawner.SpawnedEntity != null)
+    //             Del(spawner.SpawnedEntity);
+    //         spawner.AlreadySummoned = false;
+    //         ghostRole.Taken = false;
+    //
+    //         _popupSystem.PopupEntity(Loc.GetString("summon-respawn-ready", ("item", uid)), uid, PopupType.Medium);
+    //         // RemComp<SpawnCooldownComponent>(uid);
+    //     }
+    // }
+    #endregion
 }
 
 [AnyCommand]
@@ -893,5 +1003,19 @@ public sealed class GhostRoles : IConsoleCommand
             _e.System<GhostRoleSystem>().OpenEui(shell.Player);
         else
             shell.WriteLine("You can only open the ghost roles UI on a client.");
+    }
+}
+
+// Goobstation - briefing for familiars
+[ByRefEvent]
+public struct FamiliarBriefingEvent
+{
+    public EntityUid MindOwner;
+    public string? Briefing;
+
+    public FamiliarBriefingEvent(EntityUid mindOwner)
+    {
+        MindOwner = mindOwner;
+        Briefing = null;
     }
 }

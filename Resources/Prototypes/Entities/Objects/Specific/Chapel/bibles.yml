@@ -152,6 +152,22 @@
   parent: BaseStorageItem
   id: Bible
   components:
+  - type: GhostRole
+    makeSentient: true
+    allowMovement: true
+    allowSpeech: true
+    name: ghost-role-information-remilia-name
+    description: ghost-role-information-remilia-description
+    rules: ghost-role-information-familiar-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
+  - type: GhostRoleMobSpawner
+    prototype: MobBatRemilia
+    deleteOnSpawn: false
+    repeatCooldown: 30
+    requiredComponents:
+    - type: BibleUser
+    assignOwners: true
   - type: UseDelay
     delay: 10.0
   - type: Bible
@@ -177,8 +193,6 @@
   #  bibleUserOnly: true
   - type: AlternatePrayable # Goobstation
     requireBibleUser: false
-  - type: Summonable
-    specialItem: SpawnPointGhostRemilia
   - type: ReactionMixer
     mixMessage: "bible-mixing-success"
     reactionTypes:
@@ -219,6 +233,22 @@
   description: "There's a note: Klatuu, Verata, Nikto -- Don't forget it again!"
   id: BibleNecronomicon
   components:
+  - type: GhostRole
+    makeSentient: true
+    allowMovement: true
+    allowSpeech: true
+    name: ghost-role-information-cerberus-name
+    description: ghost-role-information-cerberus-description
+    rules: ghost-role-information-familiar-rules
+    mindRoles:
+    - MindRoleGhostRoleFamiliar
+    raffle:
+      settings: default
+    registerAfterInteract: true
+  - type: GhostRoleMobSpawner
+    prototype: MobCorgiCerberus
+    deleteOnSpawn: false
+    assignOwners: true
   - type: Bible
     damage:
       types:
@@ -233,9 +263,6 @@
     failChance: 0
     locPrefix: "necro"
     healSound: "/Audio/Effects/lightburn.ogg"
-  - type: Summonable
-    specialItem: SpawnPointGhostCerberus
-    respawnTime: 300
   - type: Sprite
     sprite: Objects/Specific/Chapel/necronomicon.rsi
   - type: Item

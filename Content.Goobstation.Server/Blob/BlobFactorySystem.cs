@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using System.Linq;
+using Content.Goobstation.Common.Mind;
 using Content.Goobstation.Server.Blob.Components;
 using Content.Goobstation.Shared.Blob.Components;
 using Content.Server.Popups;
@@ -73,6 +74,10 @@ public sealed class BlobFactorySystem : EntitySystem
             }
             meleeWeaponComponent.Damage = blobbernautDamage;
         }
+
+        var hasOwners = EnsureComp<HasOwnersComponent>(blobbernaut);
+        hasOwners.OwnersMob.Add(GetNetEntity(uid));
+        EnsureComp<IsOwnerComponent>(uid);
     }
 
     [ValidatePrototypeId<ReagentPrototype>]
@@ -159,6 +164,10 @@ public sealed class BlobFactorySystem : EntitySystem
         var blobPod = EnsureComp<BlobPodComponent>(pod);
         blobPod.Core = blobTileComponent.Core.Value;
         FillSmokeGas((pod,blobPod), blobCoreComponent.CurrentChem);
+
+        var hasOwners = EnsureComp<HasOwnersComponent>(pod);
+        hasOwners.OwnersMob.Add(GetNetEntity(uid));
+        EnsureComp<IsOwnerComponent>(uid);
 
         //smokeOnTrigger.SmokeColor = blobCoreComponent.ChemСolors[blobCoreComponent.CurrentChem];
         component.Accumulator = 0;

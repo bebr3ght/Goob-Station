@@ -97,6 +97,7 @@
     name: ghostrole-stalker-name
     description: ghostrole-stalker-desc
     mindRoles:
+    - MindRoleGhostRoleFamiliar
     - MindRoleGhoul
   - type: ActionGrant
     actions:

@@ -4,6 +4,7 @@
   id: HeadRev
   name: roles-antag-rev-head-name
   antagonist: true
+  allegiance: roles-antag-head-rev-allegiance
   setPreference: true
   objective: roles-antag-rev-head-objective
   requirements:
@@ -16,6 +17,7 @@
   id: Rev
   name: roles-antag-rev-name
   antagonist: true
+  allegiance: roles-antag-rev-allegiance
   setPreference: false
   objective: roles-antag-rev-objective
   guides: [ Revolutionaries ]

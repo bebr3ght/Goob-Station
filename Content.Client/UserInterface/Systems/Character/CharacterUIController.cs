@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using System.Linq;
+using System.Numerics;
 using Content.Client.CharacterInfo;
 using Content.Client.Gameplay;
 using Content.Client.Stylesheets;
@@ -8,10 +9,14 @@ using Content.Client.UserInterface.Controls;
 using Content.Client.UserInterface.Systems.Character.Controls;
 using Content.Client.UserInterface.Systems.Character.Windows;
 using Content.Client.UserInterface.Systems.Objectives.Controls;
+using Content.Goobstation.Common.Mind;
+using Content.Goobstation.Shared.Supermatter.Components;
+using Content.Shared.CharacterInfo;
 using Content.Shared.Input;
 using Content.Shared.Mind;
 using Content.Shared.Mind.Components;
 using Content.Shared.Roles;
+using Content.Shared.StatusIcon;
 using JetBrains.Annotations;
 using Robust.Client.GameObjects;
 using Robust.Client.Player;
@@ -132,16 +137,28 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
             return;
         }
 
-        var (entity, job, objectives, briefing, entityName) = data;
+        var (entity, job, allegiance, relationsInfo, objectives, briefing, entityName) = data;
 
         _window.SpriteView.SetEntity(entity);
 
         UpdateRoleType();
 
         _window.NameLabel.Text = entityName;
-        _window.SubText.Text = job;
+        _window.JobLabel.Text = job;
         _window.Objectives.RemoveAllChildren();
+        _window.OwnersList.RemoveAllChildren();
+        _window.OwnersLabel.Visible = false;
+        _window.AllegianceLabel.Text = null;
         _window.ObjectivesLabel.Visible = objectives.Any();
+
+        for (var i = _window.SubInfo.ChildCount - 1; i >= 0; i--)
+        {
+            var child = _window.SubInfo.GetChild(i);
+            if (child is TextureRect)
+            {
+                _window.SubInfo.RemoveChild(child);
+            }
+        }
 
         foreach (var (groupId, conditions) in objectives)
         {
@@ -190,6 +207,132 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
             text.AddText(briefing);
             briefingControl.Label.SetMessage(text);
             _window.Objectives.AddChild(briefingControl);
+        }
+
+        if (allegiance != null)
+            _window.AllegianceLabel.Text = $"Allegiance: {Loc.GetString(allegiance)}";
+
+        if (relationsInfo != null && relationsInfo.Count > 0)
+        {
+            var groupedRelations = new Dictionary<CharacterRelationType, List<CharacterRelationInfo>>();
+
+            foreach (var rel in relationsInfo)
+            {
+                var type = rel.RelationType ?? CharacterRelationType.Colleague;
+
+                if (!groupedRelations.TryGetValue(type, out var list))
+                {
+                    list = new List<CharacterRelationInfo>();
+                    groupedRelations[type] = list;
+                }
+
+                list.Add(rel);
+            }
+
+            CharacterRelationType[] renderOrder =
+            {
+                CharacterRelationType.Owner,
+                CharacterRelationType.Commander,
+                CharacterRelationType.Colleague
+            };
+
+            foreach (var type in renderOrder)
+            {
+                if (!groupedRelations.TryGetValue(type, out var list) || list.Count == 0)
+                    continue;
+
+                if (list.Count == 1)
+                {
+                    var rel = list[0];
+                    var titleDisplay = string.IsNullOrEmpty(rel.Title) ? "" : $" ({rel.Title})";
+                    var content = new BoxContainer { Orientation = BoxContainer.LayoutOrientation.Horizontal };
+
+                    var prefix = type switch
+                    {
+                        CharacterRelationType.Owner => "Owner: ",
+                        CharacterRelationType.Commander => "Commander: ",
+                        CharacterRelationType.Colleague => "Colleague: ",
+                        _ => "Relation:"
+                    };
+
+                    var prefixLabel = new Label
+                    {
+                        Text = prefix,
+                        StyleClasses = { "LabelSubText" },
+                    };
+                    content.AddChild(prefixLabel);
+
+                    if (rel.FactionIcon != null && _prototypeManager.TryIndex<FactionIconPrototype>(rel.FactionIcon, out var iconProto))
+                    {
+                        var ic = new TextureRect
+                        {
+                            Texture = _sprite.Frame0(iconProto.Icon),
+                            TextureScale = new Vector2(2),
+                            Margin = new Thickness(0, 0, 3, 0)
+                        };
+                        content.AddChild(ic);
+                    }
+
+                    var characterName = new Label
+                    {
+                        Text = $"{rel.Name}{titleDisplay}",
+                        StyleClasses = { "LabelSubText" },
+                    };
+                    content.AddChild(characterName);
+                    _window.OwnersList.AddChild(content);
+                }
+                else
+                {
+                    var headerText = type switch
+                    {
+                        CharacterRelationType.Owner => "Owners:",
+                        CharacterRelationType.Commander => "Commanders:",
+                        CharacterRelationType.Colleague => "Colleagues:",
+                        _ => "Relations:"
+                    };
+
+                    var groupHeader = new Label
+                    {
+                        Text = headerText,
+                        StyleClasses = { "LabelSubText" },
+                    };
+                    _window.OwnersList.AddChild(groupHeader);
+
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        var rel = list[i];
+                        var titleDisplay = string.IsNullOrEmpty(rel.Title) ? "" : $" ({rel.Title})";
+                        var content = new BoxContainer { Orientation = BoxContainer.LayoutOrientation.Horizontal };
+
+                        var countLabel = new Label
+                        {
+                            Text = $"{i + 1}. ",
+                            StyleClasses = { "LabelSubText" }
+                        };
+                        content.AddChild(countLabel);
+
+                        if (rel.FactionIcon != null && _prototypeManager.TryIndex<FactionIconPrototype>(rel.FactionIcon, out var iconProto))
+                        {
+                            var ic = new TextureRect
+                            {
+                                Texture = _sprite.Frame0(iconProto.Icon),
+                                TextureScale = new Vector2(2),
+                                Margin = new Thickness(0, 0, 3, 0)
+                            };
+                            content.AddChild(ic);
+                        }
+
+                        var relationLabel = new Label
+                        {
+                            Text = $"{rel.Name}{titleDisplay}",
+                            StyleClasses = { "LabelSubText" }
+                        };
+                        content.AddChild(relationLabel);
+
+                        _window.OwnersList.AddChild(content);
+                    }
+                }
+            }
         }
 
         var controls = _characterInfo.GetCharacterInfoControls(entity);

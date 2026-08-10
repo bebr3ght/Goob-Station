@@ -1,4 +1,5 @@
 using System.Numerics;
+using Content.Goobstation.Common.Mind;
 using Content.Goobstation.Common.Physics;
 using Content.Shared._Shitcode.Heretic.Components;
 using Content.Shared._Shitcode.Heretic.Systems.Abilities;
@@ -198,6 +199,7 @@ public abstract class SharedStarGazerSystem : EntitySystem
 
         StarGazerComponent? comp;
         HereticMinionComponent? minion;
+        HasOwnersComponent? hasOwners;
 
         var starGazer = summoner.Comp.StarGazer;
         if (!Exists(starGazer))
@@ -217,6 +219,9 @@ public abstract class SharedStarGazerSystem : EntitySystem
             Dirty(summoner, summoner.Comp);
             Dirty(starGazer.Value, minion);
             spawned = true;
+            hasOwners = EnsureComp<HasOwnersComponent>(starGazer.Value);
+            hasOwners.OwnersMob.Add(GetNetEntity(summoner.Owner));
+            EnsureComp<IsOwnerComponent>(summoner.Owner);
             return (starGazer.Value, comp);
         }
 
@@ -231,6 +236,10 @@ public abstract class SharedStarGazerSystem : EntitySystem
 
         minion.BoundHeretic = summoner.Owner;
         Dirty(starGazer.Value, minion);
+
+        hasOwners = EnsureComp<HasOwnersComponent>(starGazer.Value);
+        hasOwners.OwnersMob.Add(GetNetEntity(summoner.Owner));
+        EnsureComp<IsOwnerComponent>(summoner.Owner);
 
         return (starGazer.Value, comp);
     }

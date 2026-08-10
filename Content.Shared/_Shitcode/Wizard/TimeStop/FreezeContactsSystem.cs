@@ -2,8 +2,8 @@
 
 using System.Linq;
 using System.Numerics;
+using Content.Goobstation.Common.Mind;
 using Content.Shared._Goobstation.Wizard.FadingTimedDespawn;
-using Content.Shared._Goobstation.Wizard.Guardian;
 using Content.Shared.ActionBlocker;
 using Content.Shared.Actions;
 using Content.Shared.Emoting;
@@ -221,7 +221,7 @@ public sealed class FreezeContactsSystem : EntitySystem
             return;
         }
 
-        if (IsImmune(otherUid) || TryComp(otherUid, out GuardianSharedComponent? guardian) && IsImmune(guardian.Host))
+        if (IsImmune(otherUid) || TryComp(otherUid, out HasOwnersComponent? guardian) && IsImmune(GetEntity(guardian.OwnersMob.FirstOrDefault())))
             return;
 
         EnsureComp<FrozenComponent>(otherUid).FreezeTime = despawn.Lifetime;

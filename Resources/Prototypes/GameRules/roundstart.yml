@@ -171,6 +171,10 @@
       - type: NpcFactionMember
         factions:
         - Syndicate
+      - type: CharacterRelationGroup
+        group: NukeOps
+        relationType: Commander
+        factionIcon: SyndicateFaction
       mindRoles:
       - MindRoleNukeopsCommander
     - prefRoles: [ NukeopsMedic ]
@@ -192,6 +196,11 @@
         - Syndicate
       - type: SurgerySpeedModifier # shitmed
         speedModifier: 2
+      - type: CharacterRelationGroup
+        group: NukeOps
+        title: Medic
+        relationType: Colleague
+        factionIcon: SyndicateFaction
       mindRoles:
       - MindRoleNukeopsMedic
     - prefRoles: [ Nukeops ]
@@ -213,6 +222,10 @@
       - type: NpcFactionMember
         factions:
         - Syndicate
+      - type: CharacterRelationGroup
+        group: NukeOps
+        relationType: Colleague
+        factionIcon: SyndicateFaction
       mindRoles:
       - MindRoleNukeops
   - type: DynamicRuleCost
@@ -315,6 +328,10 @@
       components:
       - type: Revolutionary
       - type: HeadRevolutionary
+      - type: CharacterRelationGroup
+        group: Revolutionary
+        relationType: Commander
+        factionIcon: HeadRevolutionaryFaction
       mindRoles:
       - MindRoleHeadRevolutionary
   - type: DynamicRuleCost
@@ -423,6 +440,10 @@
       - type: ZombifyOnDeath
       - type: IncurableZombie
       - type: InitialInfected
+      - type: CharacterRelationGroup
+        group: Zombie
+        relationType: Commander
+        factionIcon: InitialInfectedFaction
       mindRoles:
       - MindRoleInitialInfected
   - type: DynamicRuleCost

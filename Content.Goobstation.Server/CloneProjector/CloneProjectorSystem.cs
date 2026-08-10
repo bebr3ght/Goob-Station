@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using System.Linq;
+using Content.Goobstation.Common.Mind;
 using Content.Goobstation.Shared.CloneProjector;
 using Content.Goobstation.Shared.CloneProjector.Clone;
 using Content.Goobstation.Shared.Roles.Components;
@@ -295,6 +296,10 @@ public sealed partial class CloneProjectorSystem : SharedCloneProjectorSystem
         ghostRole.RoleName = Loc.GetString(projector.Comp.GhostRoleName);
         ghostRole.RoleDescription = Loc.GetString(projector.Comp.GhostRoleDescription);
         ghostRole.RoleRules = Loc.GetString(projector.Comp.GhostRoleRules);
+
+        var hasOwners = EnsureComp<HasOwnersComponent>(clone);
+        hasOwners.OwnersMob.Add(GetNetEntity(performer));
+        EnsureComp<IsOwnerComponent>(performer);
 
         if (projector.Comp.RequiredRole != null)
         {

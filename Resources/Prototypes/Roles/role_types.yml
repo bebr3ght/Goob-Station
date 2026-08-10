@@ -33,6 +33,7 @@
 - type: roleType
   id: Familiar
   name: role-type-familiar-name
+  allegiance: roles-antag-familiar-allegiance
   color: '#6495ed'
   symbol: "🗡" # Should never be antag, but just in case.
 

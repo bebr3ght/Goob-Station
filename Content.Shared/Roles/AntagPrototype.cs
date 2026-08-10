@@ -34,6 +34,9 @@ public sealed partial class AntagPrototype : IPrototype
     [DataField("objective", required: true)]
     public string Objective { get; private set; } = "";
 
+    [DataField]
+    public LocId? Allegiance;
+
     /// <summary>
     ///     Whether or not the antag role is one of the bad guys.
     /// </summary>

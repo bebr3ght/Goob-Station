@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using System.Numerics;
+using Content.Goobstation.Common.Mind;
 using Content.Shared.NPC.Components;
 using Content.Shared.NPC.Systems;
 using Content.Shared.Whitelist;
@@ -48,5 +49,10 @@ public sealed partial class NPCImprintingOnSpawnBehaviourSystem : SharedNPCImpri
         component.Friends.Add(friend);
         var exception = EnsureComp<FactionExceptionComponent>(entity);
         exception.Ignored.Add(friend);
+
+        // Goobstation
+        var hasOwners = EnsureComp<HasOwnersComponent>(entity);
+        hasOwners.OwnersMob.Add(GetNetEntity(friend));
+        EnsureComp<IsOwnerComponent>(friend);
     }
 }

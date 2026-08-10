@@ -12,6 +12,7 @@ using Robust.Shared.Map;
 using Robust.Shared.Player;
 using Robust.Shared.Serialization.Manager;
 using System.Numerics;
+using Content.Goobstation.Common.Mind;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Random; // Goobstation - Buff carp rift
@@ -103,7 +104,13 @@ public sealed class DragonRiftSystem : EntitySystem
                 }
 
                 if (comp.Dragon != null)
+                {
                     _npc.SetBlackboard(ent, NPCBlackboard.FollowTarget, new EntityCoordinates(comp.Dragon.Value, Vector2.Zero));
+                    //Goobstation
+                    var hasOwners = EnsureComp<HasOwnersComponent>(ent);
+                    hasOwners.OwnersMob.Add(GetNetEntity(comp.Dragon.Value));
+                    EnsureComp<IsOwnerComponent>(comp.Dragon.Value);
+                }
             }
         }
     }

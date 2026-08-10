@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Content.Goobstation.Common.Mind;
 using Content.Goobstation.Common.Religion;
 using Content.Goobstation.Shared.Bible;
 using Content.Server.Ghost.Roles.Events;
@@ -256,6 +257,11 @@ namespace Content.Server.Bible
             // Make this familiar the component's summon
             var familiar = Spawn(component.SpecialItemPrototype, position.Coordinates);
             component.Summon = familiar;
+
+            // Goobstation
+            var hasOwners = EnsureComp<HasOwnersComponent>(familiar);
+            hasOwners.OwnersMob.Add(GetNetEntity(user));
+            EnsureComp<IsOwnerComponent>(user);
 
             // If this is going to use a ghost role mob spawner, attach it to the bible.
             if (HasComp<GhostRoleMobSpawnerComponent>(familiar))

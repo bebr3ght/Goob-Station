@@ -27,6 +27,9 @@ public sealed partial class RoleTypePrototype : IPrototype
     [DataField]
     public Color Color = FallbackColor;
 
+    [DataField]
+    public LocId? Allegiance;
+
     /// <summary>
     ///     A symbol used to represent the role type.
     /// </summary>

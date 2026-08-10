@@ -16,7 +16,12 @@ SPDX-License-Identifier: AGPL-3.0-or-later
                 <SpriteView OverrideDirection="South" Scale="2 2" Name="SpriteView" Access="Public" SetSize="64 64"/>
                 <BoxContainer Orientation="Vertical" VerticalAlignment="Top">
                     <Label Name="NameLabel" Access="Public"/>
-                    <Label Name="SubText" VerticalAlignment="Top" StyleClasses="LabelSubText" Access="Public"/>
+                    <BoxContainer Name="SubInfo" VerticalAlignment="Top" Orientation="Vertical" Access="Public">
+                        <Label Name="JobLabel" StyleClasses="LabelSubText" Access="Public"/>
+                        <Label Name="AllegianceLabel" StyleClasses="LabelSubText" Access="Public"/>
+                        <Label Name="OwnersLabel" Text="Owners:" StyleClasses="LabelSubText" Access="Public"/>
+                        <BoxContainer Name="OwnersList" StyleClasses="LabelSubText" Orientation="Vertical" Access="Public"/>
+                    </BoxContainer>
                 </BoxContainer>
             </BoxContainer>
             <Label Name="ObjectivesLabel" Access="Public" Text="{Loc 'character-info-objectives-label'}" HorizontalAlignment="Center"/>

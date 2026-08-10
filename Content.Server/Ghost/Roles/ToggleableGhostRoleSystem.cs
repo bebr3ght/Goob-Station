@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Content.Goobstation.Common.Mind;
 using Content.Server.Ghost.Roles.Components;
 using Content.Shared.Examine;
 using Content.Shared.Interaction; // Goobstation
@@ -170,6 +171,9 @@ public sealed class ToggleableGhostRoleSystem : EntitySystem
 
         var ghostRole = EnsureComp<GhostRoleComponent>(uid);
         EnsureComp<GhostTakeoverAvailableComponent>(uid);
+
+        var owner = EnsureComp<HasOwnersComponent>(uid);
+        owner.OwnersMob.Add(GetNetEntity(user));
 
         //GhostRoleComponent inherits custom settings from the ToggleableGhostRoleComponent
         ghostRole.RoleName = Loc.GetString(component.RoleName);

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Content.Goobstation.Common.Mind;
 using Content.Server.Administration.Systems;
 using Content.Server.Antag;
 using Content.Server.Atmos.Components;
@@ -133,6 +134,9 @@ public sealed class GhoulSystem : EntitySystem
             ent.Comp = AddComp<HereticMinionComponent>(ent);
 
         ent.Comp.BoundHeretic = heretic;
+        var hasOwners = EnsureComp<HasOwnersComponent>(ent);
+        hasOwners.OwnersMob.Add(GetNetEntity(heretic));
+        EnsureComp<IsOwnerComponent>(heretic);
         _npc.SetBlackboard(ent, NPCBlackboard.FollowTarget, heretic.ToCoordinates());
 
         if (dirty)

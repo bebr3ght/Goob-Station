@@ -160,6 +160,10 @@
       - type: Sanitized
       - type: SurgerySpeedModifier
         speedModifier: 1.5
+      - type: CharacterRelationGroup
+        group: Abductor
+        title: abductor-role-scientist
+        relationType: Colleague
       mindRoles:
       - MindRoleAbductorScientist
     - spawnerPrototype: AbductorAgentSpawner
@@ -200,5 +204,9 @@
           - FootstepSound
           - DoorBumpOpener
       - type: AbductorScientist # Should be removed when we have proper teleportation system
+      - type: CharacterRelationGroup
+        group: Abductor
+        title: abductor-role-agent
+        relationType: Colleague
       mindRoles:
       - MindRoleAbductorAgent

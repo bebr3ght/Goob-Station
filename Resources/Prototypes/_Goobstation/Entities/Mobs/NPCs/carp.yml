@@ -15,6 +15,7 @@
       rules: ghost-role-information-space-dragon-summoned-carp-rules
       mindRoles:
       - MindRoleGhostRoleTeamAntagonist
+      - MindRoleGhostRoleFamiliar
       raffle:
         settings: short
     - type: GhostTakeoverAvailable

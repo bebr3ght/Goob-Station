@@ -7,11 +7,16 @@ using Content.Shared.CharacterInfo;
 using Content.Shared.Objectives;
 using Content.Shared.Objectives.Components;
 using Content.Shared.Objectives.Systems;
+using Content.Shared.Roles.Components;
+using Robust.Shared.Prototypes;
+using Content.Goobstation.Common.Mind;
+using Robust.Shared.Serialization;
 
 namespace Content.Server.CharacterInfo;
 
 public sealed class CharacterInfoSystem : EntitySystem
 {
+    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly JobSystem _jobs = default!;
     [Dependency] private readonly MindSystem _minds = default!;
     [Dependency] private readonly RoleSystem _roles = default!;
@@ -34,7 +39,9 @@ public sealed class CharacterInfoSystem : EntitySystem
 
         var objectives = new Dictionary<string, List<ObjectiveInfo>>();
         var jobTitle = Loc.GetString("character-info-no-profession");
+        string? allegiance = null; // Goobstation
         string? briefing = null;
+        List<NetEntity> owners = new();
         if (_minds.TryGetMind(entity, out var mindId, out var mind))
         {
             // Get objectives
@@ -51,6 +58,25 @@ public sealed class CharacterInfoSystem : EntitySystem
                 objectives[issuer].Add(info.Value);
             }
 
+            // Goobstation-start
+            // Get allegiance
+            if (mind.MindRoleContainer.ContainedEntities.Count > 0)
+            {
+                foreach (var role in mind.MindRoleContainer.ContainedEntities)
+                {
+                    if (!TryComp<MindRoleComponent>(role, out var comp))
+                        continue;
+
+                    if (comp.Antag && _prototypeManager.TryIndex(comp.AntagPrototype, out var antagProto) && antagProto.Allegiance != null)
+                        allegiance = Loc.GetString(antagProto.Allegiance);
+                    if (_prototypeManager.TryIndex(comp.RoleType, out var roleType) && roleType.Allegiance != null)
+                        allegiance = roleType.Allegiance;
+                    // TODO:
+
+                }
+            }
+            // Goobstation-end
+
             if (_jobs.MindTryGetJobName(mindId, out var jobName))
                 jobTitle = jobName;
 
@@ -58,6 +84,16 @@ public sealed class CharacterInfoSystem : EntitySystem
             briefing = _roles.MindGetBriefing(mindId);
         }
 
-        RaiseNetworkEvent(new CharacterInfoEvent(GetNetEntity(entity), jobTitle, objectives, briefing), args.SenderSession);
+        var relationsEvent = new GetCharacterRelationsEvent(entity);
+        RaiseLocalEvent(entity, relationsEvent);
+
+        RaiseNetworkEvent(new CharacterInfoEvent(GetNetEntity(entity), jobTitle, allegiance, relationsEvent.RelationsInfo, objectives, briefing), args.SenderSession);
     }
+}
+
+// goobstation
+public sealed class GetCharacterRelationsEvent(EntityUid entity) : EntityEventArgs
+{
+    public readonly EntityUid Entity;
+    public List<CharacterRelationInfo> RelationsInfo = new();
 }

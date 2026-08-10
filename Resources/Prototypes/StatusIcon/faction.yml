@@ -56,3 +56,27 @@
     sprite: /Textures/Interface/Misc/job_icons.rsi
     state: Syndicate
   hideOnStealth: false
+
+- type: factionIcon
+  id: OwnerFaction
+  priority: 0
+  visibleToOwner: false
+  visibleToGhosts: false
+  showTo:
+    components:
+    - HasOwners
+  icon:
+    sprite: /Textures/_Goobstation/Relations/relations.rsi
+    state: owner
+
+- type: factionIcon
+  id: FamiliarIcon
+  priority: 0
+  visibleToOwner: false
+  visibleToGhosts: false
+  showTo:
+    components:
+    - IsOwner
+  icon:
+    sprite: /Textures/_Goobstation/Relations/relations.rsi
+    state: familiar

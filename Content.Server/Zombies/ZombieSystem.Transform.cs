@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Content.Goobstation.Common.Mind;
 using Content.Goobstation.Common.Traits;
 using Content.Server.Administration.Managers;
 using Content.Server.Atmos.Components;
@@ -53,7 +54,8 @@ using Content.Shared.Roles;
 using Content.Shared.Temperature.Components;
 using Content.Shared.Mech.EntitySystems; // Goobstation
 using Content.Shared.Tag;
-using Content.Server.Cloning; // Goob - zedcure
+using Content.Server.Cloning;
+using Content.Shared.StatusIcon; // Goob - zedcure
 
 namespace Content.Server.Zombies;
 
@@ -88,6 +90,9 @@ public sealed partial class ZombieSystem
     private static readonly ProtoId<NpcFactionPrototype> ZombieFaction = "Zombie";
     private static readonly string MindRoleZombie = "MindRoleZombie";
     private static readonly List<ProtoId<AntagPrototype>> BannableZombiePrototypes = ["Zombie"];
+
+    private static readonly ProtoId<CharacterRelationGroupPrototype> ZombieGroup = "Zombie";
+    private static readonly ProtoId<FactionIconPrototype> ZombieFactionIcon = "ZombieFaction";
 
     /// <summary>
     /// Handles an entity turning into a zombie when they die or go into crit
@@ -327,6 +332,15 @@ public sealed partial class ZombieSystem
         // Sloth: What the fuck?
         // How long until compregistry lmao.
         RemComp<PullerComponent>(target);
+
+        // Goobstation
+        if (!HasComp<InitialInfectedComponent>(target))
+        {
+            var relatives = EnsureComp<CharacterRelationGroupComponent>(target);
+            relatives.Group = ZombieGroup;
+            relatives.RelationType = CharacterRelationType.None;
+            relatives.FactionIcon = ZombieFactionIcon;
+        }
 
         // No longer waiting to become a zombie:
         // Requires deferral because this is (probably) the event which called ZombifyEntity in the first place.

@@ -4,6 +4,7 @@
   id: Nukeops
   name: roles-antag-nuclear-operative-name
   antagonist: true
+  allegiance: roles-antag-nukeops-allegiance
   setPreference: true
   objective: roles-antag-nuclear-operative-objective
   requirements:
@@ -22,6 +23,7 @@
   id: NukeopsMedic
   name: roles-antag-nuclear-operative-agent-name
   antagonist: true
+  allegiance: roles-antag-nukeops-allegiance
   setPreference: true
   objective: roles-antag-nuclear-operative-agent-objective
   requirements:
@@ -43,6 +45,7 @@
   id: NukeopsCommander
   name: roles-antag-nuclear-operative-commander-name
   antagonist: true
+  allegiance: roles-antag-nukeops-commander-allegiance
   setPreference: true
   objective: roles-antag-nuclear-operative-commander-objective
   requirements:

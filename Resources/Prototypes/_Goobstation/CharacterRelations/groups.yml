@@ -1,0 +1,14 @@
+- type: characterRelationGroup
+  id: Abductor
+
+- type: characterRelationGroup
+  id: NukeOps
+
+- type: characterRelationGroup
+  id: Zombie
+
+- type: characterRelationGroup
+  id: Revolutionary
+
+- type: characterRelationGroup
+  id: Pirate

@@ -44,7 +44,11 @@ using Content.Shared._EinsteinEngines.Revolutionary;
 using Robust.Shared.Player;
 using Content.Goobstation.Shared.Changeling.Components;
 using Content.Goobstation.Common.Conversion;
+using Content.Goobstation.Common.Mind;
+using Content.Server.CharacterInfo;
 using Content.Shared._EinsteinEngines.Revolutionary.Components;
+using Content.Shared.CharacterInfo;
+using Content.Shared.StatusIcon;
 
 
 namespace Content.Server.GameTicking.Rules;
@@ -75,6 +79,8 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
     //Used in OnPostFlash, no reference to the rule component is available
     public readonly ProtoId<NpcFactionPrototype> RevolutionaryNpcFaction = "Revolutionary";
     public readonly ProtoId<NpcFactionPrototype> RevPrototypeId = "Rev";
+
+    private static readonly ProtoId<FactionIconPrototype> RevolutionaryFactionIcon = "RevolutionaryFaction";
 
     public override void Initialize()
     {
@@ -264,6 +270,10 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
         // Goobstation - Check lose if command was converted
         if (!TryComp<CommandStaffComponent>(ev.Target, out var commandComp))
             return;
+        var relations = EnsureComp<CharacterRelationGroupComponent>(ev.Target);
+        relations.Group = "Revolutionary";
+        relations.RelationType = CharacterRelationType.None;
+        relations.FactionIcon = RevolutionaryFactionIcon;
 
         commandComp.Enabled = false;
         CheckCommandLose();

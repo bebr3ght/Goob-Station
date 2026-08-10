@@ -47,6 +47,9 @@
       - type: RandomMetadata
         nameSegments:
         - NamesDeathCommando
+      - type: CharacterRelationGroup
+        group: Pirate
+        relationType: Colleague
   - type: Tag
     tags:
     - MidroundAntag

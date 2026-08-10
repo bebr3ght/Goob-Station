@@ -219,6 +219,37 @@ public abstract partial class SharedJobSystem : EntitySystem
         return false;
     }
 
+    // Goobstation: Briefing Improve
+    /// <summary>
+    ///     Tries to get the job supervisors for this mind.
+    ///     Returns false if not found.
+    /// </summary>
+    public bool MindTryGetJobSupervisors(EntityUid? mindId, out string supervisors)
+    {
+        if (MindTryGetJob(mindId, out var prototype))
+        {
+            supervisors = prototype.LocalizedSupervisors;
+            return true;
+        }
+
+        supervisors = string.Empty;
+        return false;
+    }
+
+    // Goobstation: Briefing Improve
+    /// <summary>
+    ///     Tries to get the job supervisors for this mind.
+    ///     Returns empty string if not found.
+    /// </summary>
+    public string MindGetJobSupervisors(EntityUid? mindId)
+    {
+        var supervisors = string.Empty;
+        if (MindTryGetJob(mindId, out var prototype))
+            supervisors = prototype.LocalizedSupervisors;
+
+        return supervisors;
+    }
+
     /// <summary>
     ///     Tries to get the job name for this mind.
     ///     Returns unknown if not found.

@@ -9,11 +9,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using System.Linq;
+using System.Security.Cryptography;
 using Content.Goobstation.Server.Blob.Components;
+using Content.Goobstation.Server.Blob.Roles;
 using Content.Goobstation.Shared.Blob;
 using Content.Goobstation.Shared.Blob.Components;
 using Content.Goobstation.Shared.Blob.Events;
 using Content.Server.Actions;
+using Content.Server.Antag;
 using Content.Server.Chat.Managers;
 using Content.Server.Hands.Systems;
 using Content.Server.Mind;
@@ -52,10 +55,14 @@ public sealed class BlobObserverSystem : SharedBlobObserverSystem
     [Dependency] private readonly MapSystem _mapSystem = default!;
     [Dependency] private readonly HandsSystem _hands = default!;
     [Dependency] private readonly BlobTileSystem _blobTileSystem = default!;
+    [Dependency] private readonly AntagSelectionSystem _antag = default!;
+    [Dependency] private readonly RoleSystem _role = default!;
 
     private EntityQuery<BlobTileComponent> _tileQuery;
 
     private const double MoverJobTime = 0.005;
+    private readonly Color _briefingColor = Color.Plum;
+    private readonly Color _briefingSubColor = Color.Thistle;
     private readonly JobQueue _moveJobQueue = new(MoverJobTime);
 
     private ISawmill _logger = default!;
@@ -104,12 +111,15 @@ public sealed class BlobObserverSystem : SharedBlobObserverSystem
         }
     }
 
-    private void SendBlobBriefing(EntityUid mind)
+    private void SendBlobBriefing(EntityUid mind, EntityUid uid)
     {
-        if (_playerManager.TryGetSessionByEntity(mind, out var session))
-        {
-            _chatManager.DispatchServerMessage(session, Loc.GetString("blob-role-greeting"));
-        }
+        if (!_role.MindHasRole<BlobRoleComponent>(mind, out var blobRole))
+            return;
+        var greeting = Loc.GetString("blob-role-greeting", ("subColor", _briefingSubColor));
+        var briefing = Loc.GetString("blob-role-briefing", ("subColor", _briefingSubColor));
+
+        _antag.SendBriefing(uid, greeting, _briefingColor, null);
+        _antag.AddCharacterBriefing(blobRole.Value.Owner, briefing, _briefingColor, true, _briefingSubColor);
     }
 
     private void OnCreateBlobObserver(EntityUid blobCoreUid, BlobCoreComponent core, CreateBlobObserverEvent args)
@@ -155,7 +165,6 @@ public sealed class BlobObserverSystem : SharedBlobObserverSystem
         }
 
         _roleSystem.MindAddRole(mindId, core.MindRoleBlobPrototypeId.Id);
-        SendBlobBriefing(mindId);
 
         var blobRule = EntityQuery<GameTicking.BlobRuleComponent>().FirstOrDefault();
         blobRule?.Blobs.Add((mindId,mind));
@@ -165,6 +174,10 @@ public sealed class BlobObserverSystem : SharedBlobObserverSystem
         {
             _actorSystem.SetAttachedEntity(session, observer, true);
         }
+
+        if (_playerManager.TryGetSessionById(args.UserId, out var plSession) &&
+            plSession.AttachedEntity != null)
+            SendBlobBriefing(mindId, plSession.AttachedEntity.Value);
 
         _mindSystem.TryAddObjective(mindId, mind, BlobCaptureObjective);
 

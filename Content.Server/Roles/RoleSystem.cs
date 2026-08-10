@@ -26,6 +26,8 @@ using Content.Shared.Chat;
 using Content.Shared.Mind;
 using Content.Shared.Roles;
 using Robust.Shared.Prototypes;
+// Goobstation
+using Robust.Shared.Utility;
 
 namespace Content.Server.Roles;
 
@@ -64,6 +66,17 @@ public sealed class RoleSystem : SharedRoleSystem
             RaiseLocalEvent(role, ref ev);
         }
 
+        // Goobstation: Briefing Improve
+        var text = new FormattedMessage();
+        if (ev.Briefing != null)
+        {
+            var color = ev.BriefingColor ?? Color.Orange;
+            text.PushColor(color);
+            text.AddMarkupOrThrow($"[bold]{ev.Briefing}[/bold]");
+            text.Pop();
+            return text.ToMarkup();
+        }
+
         return ev.Briefing;
     }
 
@@ -92,6 +105,7 @@ public sealed class RoleSystem : SharedRoleSystem
     }
 }
 
+// Goobstation: Briefing Improve - added bold & briefingColor
 /// <summary>
 /// Event raised on the mind to get its briefing.
 /// Handlers can either replace or append to the briefing, whichever is more appropriate.
@@ -104,22 +118,35 @@ public sealed class GetBriefingEvent
     /// </summary>
     public string? Briefing;
 
+    public bool Bold;
+
+    public Color? BriefingColor;
+
     /// <summary>
     /// The Mind to whose Mind Role Entities the briefing is sent to
     /// </summary>
     public Entity<MindComponent> Mind;
 
-    public GetBriefingEvent(string? briefing = null)
+    public GetBriefingEvent(string? briefing = null, bool bold = false, Color? briefingColor = null)
     {
         Briefing = briefing;
+        BriefingColor = briefingColor;
+        Bold = bold;
     }
 
     /// <summary>
     /// If there is no briefing, sets it to the string.
     /// If there is a briefing, adds a new line to separate it from the appended string.
     /// </summary>
-    public void Append(string text)
+    public void Append(string text, bool bold = false, Color? briefingColor = null)
     {
+        // Goobstation - briefing & greeting improve - Start
+        briefingColor ??= Color.Orange;
+
+        BriefingColor = briefingColor;
+        Bold = bold;
+        // Goobstation - briefing & greeting improve - End
+
         if (Briefing == null)
         {
             Briefing = text;

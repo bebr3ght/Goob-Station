@@ -25,19 +25,34 @@ public sealed class RequestCharacterInfoEvent : EntityEventArgs
     }
 }
 
+// Goobstation: Briefing Improve
+[Serializable, NetSerializable]
+public readonly record struct AntagRoleInfo(
+    string RoleTitle,
+    Color? RoleTitleColor,
+    string RoleType,
+    string Issuer,
+    string? Briefing,
+    List<ObjectiveInfo> Objectives,
+    Color Color,
+    Color BriefingColor,
+    bool Bold
+);
+
+// Goobstation: Briefing Improve - add supervisors & antagrolesinfo
 [Serializable, NetSerializable]
 public sealed class CharacterInfoEvent : EntityEventArgs
 {
     public readonly NetEntity NetEntity;
     public readonly string JobTitle;
-    public readonly Dictionary<string, List<ObjectiveInfo>> Objectives;
-    public readonly string? Briefing;
+    public readonly string Supervisors;
+    public readonly List<AntagRoleInfo> AntagRolesInfo;
 
-    public CharacterInfoEvent(NetEntity netEntity, string jobTitle, Dictionary<string, List<ObjectiveInfo>> objectives, string? briefing)
+    public CharacterInfoEvent(NetEntity netEntity, string jobTitle, string supervisors, List<AntagRoleInfo> antagRolesInfo)
     {
         NetEntity = netEntity;
         JobTitle = jobTitle;
-        Objectives = objectives;
-        Briefing = briefing;
+        Supervisors = supervisors;
+        AntagRolesInfo = antagRolesInfo;
     }
 }

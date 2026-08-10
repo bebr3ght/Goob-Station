@@ -399,6 +399,10 @@
       pickPlayer: false
       mindRoles:
       - MindRoleDragon
+      briefing:
+        color: Pink
+        subColor: HotPink
+        sound: /Audio/_Goobstation/Misc/dragon_greeting.ogg # Goobstation: Briefing Improve
 
 - type: entity
   parent: BaseGameRule
@@ -454,6 +458,7 @@
       briefing:
         text: ninja-role-greeting
         color: Green
+        subColor: Lime # Goobstation: Briefing Improve
         sound: /Audio/Misc/ninja_greeting.ogg
       components:
       - type: SpaceNinja
@@ -513,6 +518,7 @@
       briefing:
         text: paradox-clone-role-greeting
         color: lightblue
+        subColor: DeepSkyBlue # Goobstation: Briefing Improve
         sound: /Audio/Misc/paradox_clone_greeting.ogg
       mindRoles:
       - MindRoleParadoxClone
@@ -827,7 +833,8 @@
         - AntagImmune
       briefing:
         text: zombie-patientzero-role-greeting
-        color: Plum
+        color: OliveDrab
+        subColor: Plum # Goobstation: Briefing Improve
         sound: "/Audio/Ambience/Antag/zombie_start.ogg"
       components:
       - type: PendingZombie #less time to prepare than normal
@@ -883,6 +890,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeops
+      briefing:
+        subColor: Crimson # Goobstation: Briefing Improve
   - type: AntagLoadProfileRule # Goobstation
     speciesOverride: Human
     alwaysUseSpeciesOverride: true
@@ -919,6 +928,8 @@
         - CommandStaff
       mindRoles:
       - MindRoleTraitorSleeper
+      briefing:
+        subColor: Crimson # Goobstation: Briefing Improve
 
 - type: entity
   id: MassHallucinations

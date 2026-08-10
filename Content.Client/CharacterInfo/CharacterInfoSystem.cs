@@ -17,7 +17,6 @@
 // SPDX-License-Identifier: MIT
 
 using Content.Shared.CharacterInfo;
-using Content.Shared.Objectives;
 using Robust.Client.Player;
 using Robust.Client.UserInterface;
 
@@ -50,7 +49,7 @@ public sealed class CharacterInfoSystem : EntitySystem
     private void OnCharacterInfoEvent(CharacterInfoEvent msg, EntitySessionEventArgs args)
     {
         var entity = GetEntity(msg.NetEntity);
-        var data = new CharacterData(entity, msg.JobTitle, msg.Objectives, msg.Briefing, Name(entity));
+        var data = new CharacterData(entity, msg.JobTitle, msg.Supervisors, msg.AntagRolesInfo, Name(entity)); // Goobstation: Briefing Improve - added supervisors & antagrolesinfo
 
         OnCharacterUpdate?.Invoke(data);
     }
@@ -62,11 +61,12 @@ public sealed class CharacterInfoSystem : EntitySystem
         return ev.Controls;
     }
 
+    // Goobstation: Briefing Improve - added supervisors and antagrolesinfo
     public readonly record struct CharacterData(
         EntityUid Entity,
         string Job,
-        Dictionary<string, List<ObjectiveInfo>> Objectives,
-        string? Briefing,
+        string Supervisors,
+        List<AntagRoleInfo> AntagRolesInfo,
         string EntityName
     );
 

@@ -97,9 +97,12 @@
 - type: antag
   id: Traitor
   name: roles-antag-syndicate-agent-name
+  nameColor: Crimson # Goobstation: Briefing Improve
   antagonist: true
   setPreference: true
   objective: roles-antag-syndicate-agent-objective
+  issuers:
+  - objective-issuer-syndicate # Goobstation: Briefing Improve
   guides: [ Traitors ]
 
 - type: antag
@@ -108,6 +111,8 @@
   antagonist: true
   setPreference: true
   objective: roles-antag-syndicate-agent-sleeper-objective
+  issuers:
+  - objective-issuer-syndicate # Goobstation: Briefing Improve
   guides: [ Traitors ]
 
 # Syndicate Operative Outfit - Monkey

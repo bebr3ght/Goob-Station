@@ -24,6 +24,13 @@ using Content.Shared.Objectives;
 using Content.Shared.Objectives.Components;
 using Content.Shared.Objectives.Systems;
 
+// Goobstation
+using Content.Server.Objectives.Components;
+using Content.Shared.Mind;
+using Content.Shared.Roles;
+using Content.Shared.Roles.Jobs;
+using Robust.Shared.Prototypes;
+
 namespace Content.Server.CharacterInfo;
 
 public sealed class CharacterInfoSystem : EntitySystem
@@ -33,6 +40,10 @@ public sealed class CharacterInfoSystem : EntitySystem
     [Dependency] private readonly RoleSystem _roles = default!;
     [Dependency] private readonly SharedObjectivesSystem _objectives = default!;
 
+    // Goobstation
+    [Dependency] private readonly IPrototypeManager _proto = default!;
+    [Dependency] private readonly IComponentFactory _factory = default!;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -40,6 +51,7 @@ public sealed class CharacterInfoSystem : EntitySystem
         SubscribeNetworkEvent<RequestCharacterInfoEvent>(OnRequestCharacterInfoEvent);
     }
 
+    // Goobstation: Briefing Improve - edited, added supervisors
     private void OnRequestCharacterInfoEvent(RequestCharacterInfoEvent msg, EntitySessionEventArgs args)
     {
         if (!args.SenderSession.AttachedEntity.HasValue
@@ -48,32 +60,129 @@ public sealed class CharacterInfoSystem : EntitySystem
 
         var entity = args.SenderSession.AttachedEntity.Value;
 
-        var objectives = new Dictionary<string, List<ObjectiveInfo>>();
-        var jobTitle = Loc.GetString("character-info-no-profession");
-        string? briefing = null;
-        if (_minds.TryGetMind(entity, out var mindId, out var mind))
-        {
-            // Get objectives
-            foreach (var objective in mind.Objectives)
-            {
-                var info = _objectives.GetInfo(objective, mindId, mind);
-                if (info == null)
-                    continue;
+        if (!_minds.TryGetMind(entity, out var mindId, out var mind))
+            return;
 
-                // group objectives by their issuer
-                var issuer = Comp<ObjectiveComponent>(objective).LocIssuer;
-                if (!objectives.ContainsKey(issuer))
-                    objectives[issuer] = new List<ObjectiveInfo>();
-                objectives[issuer].Add(info.Value);
+        Log.Debug($"Generating Character Briefing for {args.SenderSession} in CharacterInfoSystem");
+        var jobTitle = _jobs.MindTryGetJobName(mindId, out var jobName)
+            ? jobName
+            : string.Empty;
+        var supervisors = _jobs.MindTryGetJobSupervisors(mindId, out var supervisorsString)
+            ? supervisorsString
+            : string.Empty;
+        var antagRoles = CollectAntagRoles(mindId, mind);
+
+        RaiseNetworkEvent(new CharacterInfoEvent(GetNetEntity(entity), jobTitle, supervisors, antagRoles),
+            args.SenderSession);
+    }
+
+    // Goobstation: Briefing Improve
+    private List<AntagRoleInfo> CollectAntagRoles(EntityUid mindId, MindComponent mind)
+    {
+        var antagRoles = new List<AntagRoleInfo>();
+        var processedObjectives = new HashSet<EntityUid>();
+
+        foreach (var mindRole in mind.MindRoles)
+        {
+            if (HasComp<JobRoleComponent>(mindRole) ||
+                !TryComp<MindRoleComponent>(mindRole, out var mindRoleComp) ||
+                !_proto.TryIndex(mindRoleComp.RoleType, out var roleType) ||
+                !_proto.TryIndex(mindRoleComp.AntagPrototype, out var antagProto))
+            {
+                Log.Error($"Failed to collect antagonist {mindRole} role info!");
+                continue;
             }
 
-            if (_jobs.MindTryGetJobName(mindId, out var jobName))
-                jobTitle = jobName;
+            var roleObjectives = CollectRoleObjectives(
+                mind.Objectives,
+                mindRole,
+                antagProto,
+                mindId,
+                mind,
+                processedObjectives
+            );
 
-            // Get briefing
-            briefing = _roles.MindGetBriefing(mindId);
+            var localisedList = new List<string>();
+            foreach (var issuer in antagProto.Issuers)
+                localisedList.Add(Loc.GetString(issuer));
+
+            var issuerDisplay = string.Join(", ", localisedList);
+
+            var briefingEvent = new GetBriefingEvent { Mind = (mindId, mind) };
+            RaiseLocalEvent(mindRole, ref briefingEvent);
+
+            var antagRoleInfo = new AntagRoleInfo(
+                RoleTitle: Loc.GetString(antagProto.Name),
+                RoleTitleColor: antagProto.NameColor,
+                RoleType: Loc.GetString(roleType.Name),
+                Issuer: issuerDisplay,
+                Briefing: briefingEvent.Briefing,
+                Objectives: roleObjectives,
+                Color: roleType.Color,
+                BriefingColor: briefingEvent.BriefingColor ?? roleType.Color,
+                Bold: briefingEvent.Bold
+            );
+
+            antagRoles.Add(antagRoleInfo);
         }
 
-        RaiseNetworkEvent(new CharacterInfoEvent(GetNetEntity(entity), jobTitle, objectives, briefing), args.SenderSession);
+        return antagRoles;
+    }
+
+
+    // Goobstation: Briefing Improve
+    private List<ObjectiveInfo> CollectRoleObjectives(
+        List<EntityUid> allObjectives,
+        EntityUid mindRole,
+        AntagPrototype antagProto,
+        EntityUid mindId,
+        MindComponent mind,
+        HashSet<EntityUid> processedObjectives)
+    {
+        var roleObjectives = new List<ObjectiveInfo>();
+
+        foreach (var objectiveUid in allObjectives)
+        {
+            if (processedObjectives.Contains(objectiveUid) ||
+                !TryComp<ObjectiveComponent>(objectiveUid, out var objectiveComp) ||
+                !IsObjectiveForRole(objectiveUid, mindRole, antagProto, objectiveComp))
+            {
+                Log.Error($"Failed to collect antagonist {mindRole} role objectives!");
+                continue;
+            }
+
+            var objectiveInfo = _objectives.GetInfo(objectiveUid, mindId, mind);
+            if (objectiveInfo == null)
+            {
+                Log.Error($"Failed to collect antagonist {mindRole} role objectives! ObjectiveInfo does not exist!");
+                continue;
+            }
+
+            roleObjectives.Add(objectiveInfo.Value);
+            processedObjectives.Add(objectiveUid);
+        }
+
+        return roleObjectives;
+    }
+
+    // Goobstation: Briefing Improve
+    private bool IsObjectiveForRole(
+        EntityUid objectiveUid,
+        EntityUid mindRole,
+        AntagPrototype antagProto,
+        ObjectiveComponent objectiveComp)
+    {
+        if (TryComp<RoleRequirementComponent>(objectiveUid, out var roleReq))
+        {
+            foreach (var requiredRoleName in roleReq.Roles)
+            {
+                var roleType = _factory.GetRegistration(requiredRoleName).Type;
+                if (HasComp(mindRole, roleType))
+                    return true;
+            }
+            return false;
+        }
+
+        return !string.IsNullOrWhiteSpace(objectiveComp.Issuer) && antagProto.Issuers.Contains(objectiveComp.Issuer);
     }
 }

@@ -124,6 +124,10 @@ namespace Content.Shared.Roles
         [DataField("supervisors")]
         public string Supervisors { get; private set; } = "nobody";
 
+        // Goobstation: Briefing Improve
+        [ViewVariables(VVAccess.ReadOnly)]
+        public string LocalizedSupervisors => Loc.GetString(Supervisors);
+
         /// <summary>
         ///     The name of this job as displayed to players.
         /// </summary>

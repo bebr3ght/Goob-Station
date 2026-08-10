@@ -22,6 +22,9 @@ using Content.Server.Antag;
 using Content.Server.GameTicking.Rules.Components;
 using Content.Server.Roles;
 using Content.Shared.Humanoid;
+// Goobstation
+using Content.Shared.Roles;
+using Content.Server.Mind;
 
 namespace Content.Server.GameTicking.Rules;
 
@@ -29,20 +32,34 @@ public sealed class ThiefRuleSystem : GameRuleSystem<ThiefRuleComponent>
 {
     [Dependency] private readonly AntagSelectionSystem _antag = default!;
 
+    // Goobstation
+    [Dependency] private readonly SharedRoleSystem _roleSystem = default!;
+    [Dependency] private readonly MindSystem _mindSystem = default!;
+
     public override void Initialize()
     {
         base.Initialize();
 
         SubscribeLocalEvent<ThiefRuleComponent, AfterAntagEntitySelectedEvent>(AfterAntagSelected);
 
-        SubscribeLocalEvent<ThiefRoleComponent, GetBriefingEvent>(OnGetBriefing);
+        // Goobstation: Briefing Improve - Comment out unnecessary subs
+        // SubscribeLocalEvent<ThiefRoleComponent, GetBriefingEvent>(OnGetBriefing);
     }
 
     // Greeting upon thief activation
-    private void AfterAntagSelected(Entity<ThiefRuleComponent> mindId, ref AfterAntagEntitySelectedEvent args)
+    // Goobstation: Briefing Improve - Added subColor, bold & character briefing through RoleBriefingComponent
+    private void AfterAntagSelected(Entity<ThiefRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        var ent = args.EntityUid;
-        _antag.SendBriefing(ent, MakeBriefing(ent), null, null);
+        var entUid = args.EntityUid;
+
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+
+        if (!_mindSystem.TryGetMind(entUid, out var mindId, out _) ||
+            !_roleSystem.MindHasRole<ThiefRoleComponent>(mindId, out var thiefRole))
+            return;
+        _antag.SendBriefing(entUid, MakeBriefing(entUid, args.Def.Briefing?.SubColor), args.Def.Briefing?.Color, null);
+        _antag.AddCharacterBriefing(thiefRole.Value.Owner, MakeBriefing(entUid, subColor), args.Def.Briefing?.Color, bold, subColor);
     }
 
     // Character screen briefing
@@ -55,15 +72,17 @@ public sealed class ThiefRuleSystem : GameRuleSystem<ThiefRuleComponent>
         args.Append(MakeBriefing(ent.Value));
     }
 
-    private string MakeBriefing(EntityUid ent)
+    // Goobstation: Briefing Improve - Added subColor
+    private string MakeBriefing(EntityUid ent, Color? subColor = null)
     {
         var isHuman = HasComp<HumanoidAppearanceComponent>(ent);
+        subColor ??= Color.Orange;
         var briefing = isHuman
-            ? Loc.GetString("thief-role-greeting-human")
-            : Loc.GetString("thief-role-greeting-animal");
+            ? Loc.GetString("thief-role-greeting-human", ("subColor", subColor))
+            : Loc.GetString("thief-role-greeting-animal", ("subColor", subColor));
 
         if (isHuman)
-            briefing += "\n \n" + Loc.GetString("thief-role-greeting-equipment") + "\n";
+            briefing += "\n \n" + Loc.GetString("thief-role-greeting-equipment", ("subColor", subColor));
 
         return briefing;
     }

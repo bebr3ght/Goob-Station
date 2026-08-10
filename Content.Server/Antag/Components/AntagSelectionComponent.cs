@@ -347,6 +347,28 @@ public partial struct BriefingData
     public Color? Color;
 
     /// <summary>
+    /// Goobstation: Briefing Improve
+    /// The sub color of the text. Applies on specific keywords in .ftl with markup [color={$subColor}]
+    /// </summary>
+    [DataField]
+    public Color? SubColor;
+
+    /// <summary>
+    /// Goobstation: Briefing Improve
+    /// Should the briefing text be bold?
+    /// </summary>
+    [DataField]
+    public bool CharacterBriefingBold = true;
+
+    /// <summary>
+    /// Goobstation: Briefing Improve
+    /// Should a briefing be created in the Character Menu?
+    /// Used if _antag.AddCharacterBriefing is missing and BriefingData is present.
+    /// </summary>
+    [DataField]
+    public bool CreateCharacterBriefing = true;
+
+    /// <summary>
     /// The sound played.
     /// </summary>
     [DataField]

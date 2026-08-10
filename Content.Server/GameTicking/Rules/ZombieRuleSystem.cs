@@ -89,10 +89,12 @@ using Content.Shared.Mobs.Systems;
 using Content.Shared.Roles;
 using Content.Shared.Zombies;
 using Robust.Shared.Audio;
-using Robust.Shared.Audio.Systems; // goobstation
 using Robust.Shared.Player;
 using Robust.Shared.Timing;
 using System.Globalization;
+// goobstation
+using Robust.Shared.Audio.Systems;
+using Content.Server.Mind;
 
 namespace Content.Server.GameTicking.Rules;
 
@@ -110,15 +112,36 @@ public sealed class ZombieRuleSystem : GameRuleSystem<ZombieRuleComponent>
     [Dependency] private readonly StationSystem _station = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!; // Einstein Engines - Zombie Improvements Take 2
     [Dependency] private readonly ZombieSystem _zombie = default!;
-    [Dependency] private readonly SharedAudioSystem _audio = default!; // Goobstation
+
+    // Goobstation
+    [Dependency] private readonly SharedAudioSystem _audio = default!;
+    [Dependency] private readonly MindSystem _mind = default!;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<InitialInfectedRoleComponent, GetBriefingEvent>(OnGetBriefing);
-        SubscribeLocalEvent<ZombieRoleComponent, GetBriefingEvent>(OnGetBriefing);
         SubscribeLocalEvent<IncurableZombieComponent, ZombifySelfActionEvent>(OnZombifySelf);
+
+        // Goobstation: Briefing Improve - comment out unnecessary wizden subs & add AfterAntagEntitySelectedEvent sub
+        SubscribeLocalEvent<ZombieRuleComponent, AfterAntagEntitySelectedEvent>(AfterAntagSelected);
+        // SubscribeLocalEvent<InitialInfectedRoleComponent, GetBriefingEvent>(OnGetBriefing);
+        // SubscribeLocalEvent<ZombieRoleComponent, GetBriefingEvent>(OnGetBriefing);
+
+    }
+
+    // Goobstation: Briefing Improve
+    private void AfterAntagSelected(Entity<ZombieRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
+    {
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var briefing = Loc.GetString("zombie-patientzero-role-greeting", ("subColor", subColor));
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_roles.MindHasRole<InitialInfectedRoleComponent>(mindId, out var initialRole))
+            return;
+        _antag.AddCharacterBriefing(initialRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold);
     }
 
     private void OnGetBriefing(Entity<InitialInfectedRoleComponent> role, ref GetBriefingEvent args)

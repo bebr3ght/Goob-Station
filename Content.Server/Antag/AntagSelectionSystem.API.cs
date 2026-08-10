@@ -31,6 +31,8 @@ using Robust.Shared.Audio;
 using Robust.Shared.Enums;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+// Goobstation
+using Content.Server.Roles;
 
 namespace Content.Server.Antag;
 
@@ -320,19 +322,78 @@ public sealed partial class AntagSelectionSystem
     }
 
     /// <summary>
+    /// Goobstation: Briefing Improve
+    /// Adds briefing in character menu through RoleBriefingComponent
+    /// </summary>
+    /// <param name="role"></param>
+    /// <param name="briefing">The localized text to display. Obtain it by calling Loc.GetString</param>
+    /// <param name="briefingColor"></param>
+    /// <param name="bold"></param>
+    /// <param name="briefingSubColor"></param>
+    public void AddCharacterBriefing(EntityUid role, string briefing, Color? briefingColor, bool bold = true, Color? briefingSubColor = null)
+    {
+        EnsureComp<RoleBriefingComponent>(role, out var briefingComp);
+        briefingComp.Briefing = briefing;
+        briefingComp.BriefingColor = briefingColor;
+        briefingComp.Bold = bold;
+        briefingComp.BriefingSubColor = briefingSubColor;
+    }
+
+    /// <summary>
+    /// Goobstation: Briefing Improve
+    /// Adds briefing to the character menu (C) for a specific session based on their antag roles.
+    /// </summary>
+    public void AddCharacterBriefing(ICommonSession? session, BriefingData? data, List<EntProtoId>? mindRoles)
+    {
+        if (session == null || data == null || mindRoles == null || !_mind.TryGetMind(session, out _, out var mindComp))
+            return;
+
+        var text = data.Value.Text != null
+            ? Loc.GetString(data.Value.Text,
+                ("subColor", data.Value.SubColor ?? data.Value.Color ?? Color.Orange))
+            : string.Empty;
+
+        foreach (var roleProtoId in mindRoles)
+        {
+            foreach (var roleEnt in mindComp.MindRoles)
+            {
+                var entProtoId = MetaData(roleEnt).EntityPrototype?.ID;
+                if (entProtoId != null && entProtoId == roleProtoId)
+                {
+                    EnsureComp<RoleBriefingComponent>(roleEnt, out var briefingComp);
+
+                    briefingComp.Briefing = text;
+                    briefingComp.BriefingColor = data.Value.Color;
+                    briefingComp.Bold = data.Value.CharacterBriefingBold;
+                    briefingComp.BriefingSubColor = data.Value.SubColor;
+                }
+            }
+        }
+    }
+
+    // Goobstation: Briefing Improve - added mindRoles and AddCharacterBriefing, subColor for briefing
+    /// <summary>
     /// Helper method to send the briefing text and sound to a session
     /// </summary>
     /// <param name="session">The player chosen to be an antag</param>
     /// <param name="data">The briefing data</param>
+    /// <param name="mindRoles"></param>
     public void SendBriefing(
         ICommonSession? session,
-        BriefingData? data)
+        BriefingData? data,
+        List<EntProtoId>? mindRoles)
     {
         if (session == null || data == null)
             return;
 
-        var text = data.Value.Text == null ? string.Empty : Loc.GetString(data.Value.Text);
+        var text = data.Value.Text != null
+            ? Loc.GetString(data.Value.Text,
+                ("subColor", data.Value.SubColor ?? data.Value.Color ?? Color.Orange))
+            : string.Empty;
         SendBriefing(session, text, data.Value.Color, data.Value.Sound);
+
+        if (data.Value.CreateCharacterBriefing)
+            AddCharacterBriefing(session, data, mindRoles);
     }
 
     /// <summary>

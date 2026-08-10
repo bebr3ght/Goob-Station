@@ -21,9 +21,16 @@ nukeops-title = Nuclear Operatives
 nukeops-description = Nuclear operatives have targeted the station. Try to keep them from arming and detonating the nuke by protecting the nuke disk!
 
 nukeops-welcome =
-    You are a nuclear operative. Your goal is to blow up {$station}, and ensure that it is nothing but a pile of rubble. Your bosses, the Syndicate, have provided you with the tools you'll need for the task.
-    Operation {$name} is a go ! Death to Nanotrasen!
-nukeops-briefing = Your objectives are simple. Deliver the payload and get out before the payload detonates. Begin mission.
+    You are a [color={$subColor}]nuclear operative[/color]. Your goal is to blow up [color={$subColor}]{$station}[/color], and ensure that it is nothing but a pile of rubble.
+    Your bosses, [color={$subColor}]the Syndicate[/color], have provided you with the tools you'll need for the task.
+    Operation [color={$subColor}]{$name}[/color] is a go! [color={$subColor}]
+    Death to Nanotrasen![/color]
+
+nukeops-briefing =
+    Your objectives are simple.
+    Deliver the [color={$subColor}]payload[/color] and get out before the [color={$subColor}]payload[/color] detonates. [color={$subColor}]
+    Begin mission.[/color]
+
 
 nukeops-opsmajor = [color=crimson]Syndicate major victory![/color]
 nukeops-opsminor = [color=crimson]Syndicate minor victory![/color]

@@ -10,15 +10,10 @@ using Content.Server.Antag;
 using Content.Server.GameTicking;
 using Content.Server.GameTicking.Rules;
 using Content.Server.Mind;
-using Content.Server.Roles;
-using Content.Server.Zombies;
 using Content.Shared.GameTicking.Components;
 using Content.Shared.Mobs.Systems;
-using Content.Shared.NPC.Prototypes;
 using Content.Shared.NPC.Systems;
 using Content.Shared.Roles;
-using Robust.Shared.Audio;
-using Robust.Shared.Prototypes;
 
 namespace Content.Goobstation.Server.Shadowling.Rules;
 
@@ -30,20 +25,11 @@ public sealed class ShadowlingRuleSystem : GameRuleSystem<ShadowlingRuleComponen
     [Dependency] private readonly MobStateSystem _mob = default!;
     [Dependency] private readonly NpcFactionSystem _npc = default!;
 
-    private readonly SoundSpecifier _briefingSound = new SoundPathSpecifier("/Audio/_EinsteinEngines/Shadowling/shadowling.ogg");
-
-    private readonly EntProtoId _mindRole = "MindRoleShadowling";
-
-    private readonly ProtoId<NpcFactionPrototype> _shadowlingFactionId = "Shadowling";
-
-    private readonly ProtoId<NpcFactionPrototype> _nanotrasenFactionId = "NanoTrasen";
-
     public override void Initialize()
     {
         base.Initialize();
 
         SubscribeLocalEvent<ShadowlingRuleComponent, AfterAntagEntitySelectedEvent>(OnSelectAntag);
-        SubscribeLocalEvent<ShadowlingRoleComponent, GetBriefingEvent>(OnGetBriefing);
 
         SubscribeLocalEvent<ShadowlingAscendEvent>(OnAscend);
         SubscribeLocalEvent<ShadowlingDeathEvent>(OnDeath);
@@ -80,35 +66,17 @@ public sealed class ShadowlingRuleSystem : GameRuleSystem<ShadowlingRuleComponen
         }
     }
 
-    private void OnGetBriefing(EntityUid uid, ShadowlingRoleComponent component, ref GetBriefingEvent args)
-    {
-        var ent = args.Mind.Comp.OwnedEntity;
-        var sling = HasComp<ShadowlingComponent>(ent);
-        args.Briefing = Loc.GetString(sling ? "shadowling-briefing" : "thrall-briefing");
-    }
-
     private void OnSelectAntag(EntityUid uid, ShadowlingRuleComponent comp, ref AfterAntagEntitySelectedEvent args)
     {
-        MakeShadowling(args.EntityUid);
-    }
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var briefing = Loc.GetString("shadowling-briefing", ("subColor", subColor));
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
 
-    public bool MakeShadowling(EntityUid target)
-    {
-        if (!_mind.TryGetMind(target, out var mindId, out var mind))
-            return false;
-
-        _role.MindAddRole(mindId, _mindRole, mind, true);
-
-        _npc.RemoveFaction(target, _nanotrasenFactionId, false);
-        _npc.AddFaction(target, _shadowlingFactionId);
-
-        var briefing = Loc.GetString("shadowling-role-greeting");
-
-        _antag.SendBriefing(target, briefing, Color.MediumPurple, _briefingSound);
-
-        EnsureComp<ZombieImmuneComponent>(target);
-        EnsureComp<ShadowlingComponent>(target);
-        return true;
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_role.MindHasRole<ShadowlingRoleComponent>(mindId, out var shadowlingRole))
+            return;
+        _antag.AddCharacterBriefing(shadowlingRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
     }
 
     protected override void AppendRoundEndText(

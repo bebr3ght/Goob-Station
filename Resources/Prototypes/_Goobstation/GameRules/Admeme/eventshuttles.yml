@@ -147,6 +147,7 @@
       briefing:
         text: contractor-role-greeting
         color: Red
+        subColor: DarkRed
         sound: /Audio/Ambience/Antag/traitor_wawa.ogg
       components:
       - type: RandomMetadata

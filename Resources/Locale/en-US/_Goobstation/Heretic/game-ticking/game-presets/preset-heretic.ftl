@@ -18,19 +18,18 @@ heretic-gamemode-title = Heretics
 heretic-gamemode-description =
     Dimensional anomaly detected within the station. There is no additional data.
 
-heretic-role-greeting-fluff =
-    Another day at a meaningless job. You feel a shimmer around you, as a realization of something strange in the air unfolds. You look inwards and discover something that will change your life.
-
-    The Gates of Mansus open up to your mind.
-
 heretic-role-greeting =
-    You are the Heretic!
+    { "" }[bold]Another day at a meaningless job, but...[/bold]
+    { "" }...You feel a [color={$subColor}]shimmer[/color] around you, as a realization of something strange in the air unfolds.
+    You look inwards and discover something that will change your life.
+    The [color={$subColor}]Gates of Mansus[/color] open up to your mind.
 
-    Read more about your role in the guidebook entry.
+    You are the [color={$subColor}][bold]Heretic[/bold][/color]! [italic]
+    Read more about your role in the guidebook entry.[/italic]
 
 heretic-role-greeting-short =
-    You are the Heretic!
-    In order to learn the Final Ritual and Ascend, you must fulfill your tasks.
+    You are the [color={$subColor}]Heretic[/color]!
+    In order to learn the [color={$subColor}]Final Ritual[/color] and [color={$subColor}]Ascend[/color], you must fulfill your tasks.
 
 ## ghoul
 heretic-ghoul-greeting =

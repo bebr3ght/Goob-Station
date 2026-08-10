@@ -12,9 +12,12 @@
 - type: antag
   id: Changeling
   name: roles-antag-changeling-name
+  nameColor: Orange
   antagonist: true
   setPreference: true
   objective: roles-antag-changeling-description
+  issuers:
+  - objective-issuer-hivemind
   requirements:
   - !type:OverallPlaytimeRequirement
       time: 36000 #10 hrs

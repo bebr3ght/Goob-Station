@@ -92,6 +92,5 @@
   description: Entity that contains all components for Thralls after Hypnosis.
   categories: [ HideSpawnMenu ]
   components:
-  - type: Thrall
   - type: NightVision
   - type: ThrallGuise

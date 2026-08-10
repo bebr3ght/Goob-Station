@@ -79,9 +79,12 @@
 - type: antag
   id: SpaceNinja
   name: roles-antag-space-ninja-name
+  nameColor: '#33cc00' # Goobstation: Briefing Improve
   antagonist: true
   setPreference: false
   objective: roles-antag-space-ninja-objective
+  issuers:
+  - objective-issuer-spiderclan # Goobstation: Briefing Improve
   guides: [ SpaceNinja ]
   requirements:
   - !type:SpeciesRequirement

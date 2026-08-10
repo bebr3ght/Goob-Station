@@ -47,6 +47,29 @@
       components:
       - type: WeakToHoly
       - type: CanEnchant
+      - type: Heretic
+      - type: NpcFactionMember
+        factions:
+        - Heretic
+      - type: Store
+        categories:
+        - HereticPathAsh
+        #- HereticPathLock
+        - HereticPathFlesh
+        - HereticPathBlade
+        - HereticPathVoid
+        - HereticPathRust
+        - HereticPathCosmos
+        - HereticPathSide
+        currencyWhitelist:
+        - KnowledgePoint
+        balance:
+          KnowledgePoint: 2
+      briefing:
+        text: heretic-role-greeting
+        color: MediumOrchid
+        subColor: Magenta
+        sound: "/Audio/_Goobstation/Heretic/Ambience/Antag/Heretic/heretic_gain.ogg"
   - type: Tag
     tags:
       - RoundstartAntag

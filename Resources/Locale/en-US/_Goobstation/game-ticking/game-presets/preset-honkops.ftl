@@ -8,9 +8,13 @@ honkops-title = Honklear Operatives
 honkops-description = Honklear operatives have targeted the station. Try to keep them from arming and detonating the nuke by protecting the nuke disk!
 
 honkops-welcome =
-    You are a honklear operative. Your goal is to blow up {$station}, and ensure that it is nothing but a pile of rubble. Your bosses, the Honkicate, have provided you with the tools you'll need for the task.
-    Operation {$name} is a go! Honk!
-honkops-briefing = Your objectives are simple. Deliver the payload and make sure it detonates. Begin mission. Honk!
+    You are a [color={$subColor}]honklear operative[/color]. Your goal is to blow up [color={$subColor}]{$station}[/color], and ensure that it is nothing but a pile of rubble.
+    Your bosses, [color={$subColor}]the Honkicate[/color], have provided you with the tools you'll need for the task.
+    Operation [color={$subColor}]{$name}[/color] is a go! Honk!
+honkops-briefing =
+    Your objectives are simple.
+    Deliver the [color={$subColor}]payload[/color] and make sure it detonates. [color={$subColor}]
+    Begin mission. Honk![/color]
 
 honkops-opsmajor = [color=crimson]Honkicate major victory![/color]
 honkops-opsminor = [color=crimson]Honkicate minor victory![/color]

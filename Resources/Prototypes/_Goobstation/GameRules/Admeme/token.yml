@@ -248,6 +248,7 @@
       briefing:
         text: slaughter-role-greeting
         color: Red
+        subColor: Crimson
       components:
       - type: RandomMetadata
         nameSegments:
@@ -302,6 +303,7 @@
       briefing:
         text: laughter-role-greeting
         color: Pink
+        subColor: HotPink
       components:
       - type: RandomMetadata
         nameSegments:

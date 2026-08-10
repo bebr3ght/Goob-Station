@@ -11,5 +11,7 @@ public record struct SetupUplinkEvent
     // This one is for the character window
     public string? BriefingEntryShort;
 
+    public Color? BriefingSubColor;
+
     public bool Handled;
 }

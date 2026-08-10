@@ -12,11 +12,7 @@ using Content.Server.GameTicking.Rules;
 using Content.Server.Mind;
 using Content.Server.Objectives;
 using Content.Server.Roles;
-using Content.Shared.NPC.Prototypes;
 using Content.Shared.NPC.Systems;
-using Content.Shared.Roles;
-using Robust.Shared.Audio;
-using Robust.Shared.Prototypes;
 
 namespace Content.Goobstation.Server.Devil.GameTicking.Rules;
 
@@ -26,48 +22,33 @@ public sealed class DevilRuleSystem : GameRuleSystem<DevilRuleComponent>
     [Dependency] private readonly AntagSelectionSystem _antag = default!;
     [Dependency] private readonly NpcFactionSystem _npcFaction = default!;
     [Dependency] private readonly ObjectivesSystem _objective = default!;
+    [Dependency] private readonly RoleSystem _role = default!;
+
     public override void Initialize()
     {
         base.Initialize();
 
         SubscribeLocalEvent<DevilRuleComponent, AfterAntagEntitySelectedEvent>(OnSelectAntag);
         SubscribeLocalEvent<DevilRuleComponent, ObjectivesTextPrependEvent>(OnTextPrepend);
-        SubscribeLocalEvent<DevilRoleComponent, GetBriefingEvent>(OnGetBrief);
     }
 
     private void OnSelectAntag(EntityUid uid, DevilRuleComponent comp, ref AfterAntagEntitySelectedEvent args)
     {
-        MakeDevil(args.EntityUid, comp);
-    }
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+        var devilComp = EnsureComp<DevilComponent>(entUid);
+        var greeting = args.Def.Briefing?.Text ?? Loc.GetString("devil-role-greeting", ("trueName", devilComp.TrueName), ("playerName", Name(entUid)), ("subColor", subColor));
+        var briefing = Loc.GetString("devil-role-briefing", ("trueName", devilComp.TrueName), ("playerName", Name(entUid)), ("subColor", subColor));
 
-    private bool MakeDevil(EntityUid target, DevilRuleComponent rule)
-    {
-        var devilComp = EnsureComp<DevilComponent>(target);
-
-        var briefing = Loc.GetString("devil-role-greeting", ("trueName", devilComp.TrueName), ("playerName", Name(target)));
-        _antag.SendBriefing(target, briefing, Color.DarkRed, rule.BriefingSound);
-
-        _npcFaction.RemoveFaction(target, rule.NanotrasenFaction);
-        _npcFaction.AddFaction(target, rule.DevilFaction);
-
-        return true;
-    }
-
-    private void OnGetBrief(Entity<DevilRoleComponent> role, ref GetBriefingEvent args)
-    {
-        var ent = args.Mind.Comp.OwnedEntity;
-
-        if (ent is null)
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_role.MindHasRole<DevilRoleComponent>(mindId, out var deviLRole))
             return;
+        _antag.AddCharacterBriefing(deviLRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
+        _antag.SendBriefing(entUid, greeting, args.Def.Briefing?.Color, args.Def.Briefing?.Sound);
 
-        args.Append(MakeBriefing(ent.Value));
-    }
-
-    private string MakeBriefing(EntityUid ent)
-    {
-        return !TryComp<DevilComponent>(ent, out var devilComp)
-            ? null!
-            : Loc.GetString("devil-role-greeting", ("trueName", devilComp.TrueName), ("playerName", Name(ent)));
+        _npcFaction.RemoveFaction(entUid, comp.NanotrasenFaction);
+        _npcFaction.AddFaction(entUid, comp.DevilFaction);
     }
 
     private void OnTextPrepend(EntityUid uid, DevilRuleComponent comp, ref ObjectivesTextPrependEvent args)

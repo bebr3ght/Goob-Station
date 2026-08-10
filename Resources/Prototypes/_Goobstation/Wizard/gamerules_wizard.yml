@@ -121,6 +121,9 @@
       - type: NpcFactionMember
         factions:
         - Wizard
+      briefing:
+        color: Cyan
+        subColor: CadetBlue # Goobstation: Briefing Improve
   - type: Tag
     tags:
       - MidroundAntag

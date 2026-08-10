@@ -7,9 +7,12 @@
 - type: antag
   id: Devil
   name: roles-antag-devil-name
+  nameColor: Salmon
   antagonist: true
   setPreference: true
   objective: roles-antag-devil-description
+  issuers:
+  - objective-issuer-devil
   guides: [ Devil ]
   requirements:
   - !type:OverallPlaytimeRequirement

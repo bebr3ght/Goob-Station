@@ -26,7 +26,8 @@ public sealed class DragonRuleSystem : GameRuleSystem<DragonRuleComponent>
         base.Initialize();
 
         SubscribeLocalEvent<DragonRuleComponent, AfterAntagEntitySelectedEvent>(AfterAntagEntitySelected);
-        SubscribeLocalEvent<DragonRoleComponent, GetBriefingEvent>(UpdateBriefing);
+        // Goobstation: Briefing Improve - comment out unnecessary subs
+        // SubscribeLocalEvent<DragonRoleComponent, GetBriefingEvent>(UpdateBriefing);
     }
 
     private void UpdateBriefing(Entity<DragonRoleComponent> entity, ref GetBriefingEvent args)
@@ -36,23 +37,26 @@ public sealed class DragonRuleSystem : GameRuleSystem<DragonRuleComponent>
         if(ent is null)
             return;
 
-        args.Append(MakeBriefing(ent.Value));
+        args.Append(MakeBriefing(ent.Value, Color.White));
     }
 
+    // Goobstation: Briefing Improve - added Character Briefing assign, color, subColor & bold
     private void AfterAntagEntitySelected(Entity<DragonRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        if (!_mind.TryGetMind(args.EntityUid, out var mindId, out var mind))
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+        var briefing = MakeBriefing(args.EntityUid, subColor);
+
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_roleSystem.MindHasRole<DragonRoleComponent>(mindId, out var dragonRole))
             return;
-
-        _roleSystem.MindHasRole<DragonRoleComponent>(mindId, out var dragonRole);
-
-        if(dragonRole is null)
-            return;
-
-        _antag.SendBriefing(args.EntityUid, MakeBriefing(args.EntityUid), null, null);
+        _antag.AddCharacterBriefing(dragonRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
+        _antag.SendBriefing(entUid, briefing, args.Def.Briefing?.Color, null);
     }
 
-    private string MakeBriefing(EntityUid dragon)
+    // Goobstation: Briefing Improve - added subColor
+    private string MakeBriefing(EntityUid dragon, Color subColor)
     {
         var direction = string.Empty;
 
@@ -71,7 +75,7 @@ public sealed class DragonRuleSystem : GameRuleSystem<DragonRuleComponent>
             direction = ContentLocalizationManager.FormatDirection(vectorToStation.GetDir());
         }
 
-        var briefing = Loc.GetString("dragon-role-briefing", ("direction", direction));
+        var briefing = Loc.GetString("dragon-role-briefing", ("direction", direction), ("subColor", subColor));
 
         return briefing;
     }

@@ -14,6 +14,17 @@
       blacklist:
         components:
         - CommandStaff
+      components: # Goobstation: Briefing Improve
+      - type: ZombieImmune
+      - type: Shadowling
+      - type: NpcFactionMember
+        factions:
+        - Shadowling
+      briefing: # Goobstation: Briefing Improve
+        text: shadowling-role-greeting
+        color: DarkViolet
+        subColor: Magenta
+        sound: "/Audio/_EinsteinEngines/Shadowling/shadowling.ogg"
       mindRoles:
       - MindRoleShadowling
   - type: AntagObjectives

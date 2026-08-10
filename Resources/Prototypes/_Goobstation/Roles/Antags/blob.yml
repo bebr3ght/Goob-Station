@@ -8,9 +8,12 @@
 - type: antag
   id: Blob
   name: roles-antag-blob-name
+  nameColor: '#33cc00'
   antagonist: true
   setPreference: true
   objective: roles-antag-blob-objective
+  issuers:
+  - preset-blob-objective-issuer-blob
   guides: [ Blob ]
   requirements:
   - !type:OverallPlaytimeRequirement

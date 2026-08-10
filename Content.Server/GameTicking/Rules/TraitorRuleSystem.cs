@@ -161,10 +161,11 @@ public sealed class TraitorRuleSystem : GameRuleSystem<TraitorRuleComponent>
     private void AfterEntitySelected(Entity<TraitorRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         Log.Debug($"AfterAntagEntitySelected {ToPrettyString(ent)}");
-        MakeTraitor(args.EntityUid, ent);
+        MakeTraitor(args.EntityUid, ent, args.Def.Briefing?.Color, args.Def.Briefing?.SubColor, args.Def.Briefing?.CharacterBriefingBold);
     }
 
-    public bool MakeTraitor(EntityUid traitor, TraitorRuleComponent component)
+    // Goobstation: Briefing Improve - Added colorBrief, subColor & bold
+    public bool MakeTraitor(EntityUid traitor, TraitorRuleComponent component, Color? colorBrief = null, Color? subColor = null, bool? bold = false)
     {
         Log.Debug($"MakeTraitor {ToPrettyString(traitor)} - start");
         var factionCodewords = _codewordSystem.GetCodewords(component.CodewordFactionPrototypeId);
@@ -173,7 +174,8 @@ public sealed class TraitorRuleSystem : GameRuleSystem<TraitorRuleComponent>
         if (!_mindSystem.TryGetMind(traitor, out var mindId, out var mind))
             return false;
 
-        var briefing = "";
+        subColor ??= TraitorCodewordColor;
+        bold ??= false;
 
         var issuer = _random.Pick(_prototypeManager.Index(component.ObjectiveIssuers));
 
@@ -189,7 +191,7 @@ public sealed class TraitorRuleSystem : GameRuleSystem<TraitorRuleComponent>
 
             var uplinkPreference = _goobUplink.GetUplinkPreference(mindId);
 
-            if (!_uplink.TryAddUplink(traitor, startingBalance, uplinkPreference, out _, out var setupEvent))
+            if (!_uplink.TryAddUplink(traitor, startingBalance, uplinkPreference, subColor, out _, out var setupEvent))
                 return false;
 
             if (setupEvent != null)
@@ -208,14 +210,13 @@ public sealed class TraitorRuleSystem : GameRuleSystem<TraitorRuleComponent>
         if (component.GiveCodewords)
         {
             Log.Debug($"MakeTraitor {ToPrettyString(traitor)} - added codewords flufftext to briefing");
-            briefing = Loc.GetString("traitor-role-codewords-short", ("codewords", string.Join(", ", factionCodewords)));
             Log.Debug($"MakeTraitor {ToPrettyString(traitor)} - set codewords from component");
             codewords = factionCodewords;
         }
 
         if (component.GiveBriefing)
         {
-            _antag.SendBriefing(traitor, GenerateBriefing(codewords, uplinkBriefing, issuer), null, component.GreetSoundNotification);
+            _antag.SendBriefing(traitor, GenerateBriefing(codewords, uplinkBriefing, issuer, subColor), colorBrief, component.GreetSoundNotification);
             Log.Debug($"MakeTraitor {ToPrettyString(traitor)} - Sent the Briefing");
         }
 
@@ -229,9 +230,11 @@ public sealed class TraitorRuleSystem : GameRuleSystem<TraitorRuleComponent>
         if (traitorRole is not null)
         {
             Log.Debug($"MakeTraitor {ToPrettyString(traitor)} - Add traitor briefing components");
-            EnsureComp<RoleBriefingComponent>(traitorRole.Value.Owner, out var briefingComp);
-            // Goobstation Change - If you remove this, we lose ringtones and flavor in char menu. Upstream's version sucks.
-            briefingComp.Briefing = GenerateBriefingCharacter(codewords, uplinkBriefingShort, issuer);
+            _antag.AddCharacterBriefing(traitorRole.Value.Owner,
+                GenerateBriefingCharacter(codewords, uplinkBriefingShort, issuer, subColor),
+                colorBrief,
+                bold.Value,
+                subColor);
         }
 
         var color = TraitorCodewordColor; // Fall back to a dark red Syndicate color if a prototype is not found
@@ -255,38 +258,41 @@ public sealed class TraitorRuleSystem : GameRuleSystem<TraitorRuleComponent>
     }
 
     // TODO: figure out how to handle this? add priority to briefing event?
-    private string GenerateBriefing(string[]? codewords, string? uplinkBriefing, string objectiveIssuer)
+    // Goobstation: Briefing Improve - Added subColor
+    private string GenerateBriefing(string[]? codewords, string? uplinkBriefing, string objectiveIssuer, Color? subColor = null)
     {
         var sb = new StringBuilder();
-        sb.AppendLine(Loc.GetString("traitor-role-greeting", ("corporation", objectiveIssuer ?? Loc.GetString("objective-issuer-unknown"))));
+        subColor ??= Color.DarkRed;
+        sb.AppendLine(Loc.GetString("traitor-role-greeting", ("corporation", objectiveIssuer), ("subColor", subColor)));
         if (codewords != null)
-            sb.AppendLine(Loc.GetString("traitor-role-codewords", ("codewords", string.Join(", ", codewords))));
+            sb.AppendLine(Loc.GetString("traitor-role-codewords", ("codewords", string.Join(", ", codewords)), ("subColor", subColor)));
         if (uplinkBriefing != null)
             sb.AppendLine(uplinkBriefing);
         else
-            sb.AppendLine(Loc.GetString("traitor-role-uplink-implant"));
+            sb.AppendLine(Loc.GetString("traitor-role-uplink-implant", ("subColor", subColor)));
 
         return sb.ToString();
     }
 
-    // Goobstation Change - Readd the character briefing text.
-    private string GenerateBriefingCharacter(string[]? codewords, string? uplinkBriefingShort, string objectiveIssuer)
+    // Goobstation Change - Readd the character briefing text | Briefing Improve - Added subColor
+    private string GenerateBriefingCharacter(string[]? codewords, string? uplinkBriefingShort, string objectiveIssuer, Color? subColor = null, bool? bold = false)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("\n" + Loc.GetString($"traitor-{objectiveIssuer.Replace(" ", "").ToLower()}-intro"));
+        subColor ??= Color.DarkRed;
+        sb.AppendLine("\n" + Loc.GetString($"traitor-{objectiveIssuer.Replace(" ", "").ToLower()}-intro", ("subColor", subColor.Value)));
 
         if (uplinkBriefingShort != null)
             sb.AppendLine(uplinkBriefingShort);
         else sb.AppendLine("\n" + Loc.GetString($"traitor-role-nouplink"));
 
         if (codewords != null)
-            sb.AppendLine(Loc.GetString($"traitor-role-codewords-short", ("codewords", string.Join(", ", codewords))));
+            sb.AppendLine(Loc.GetString($"traitor-role-codewords-short", ("codewords", string.Join(", ", codewords)), ("subColor", subColor.Value)));
 
         sb.AppendLine("\n" + Loc.GetString($"traitor-role-allegiances"));
-        sb.AppendLine(Loc.GetString($"traitor-{objectiveIssuer.Replace(" ", "").ToLower()}-allies"));
+        sb.AppendLine(Loc.GetString($"traitor-{objectiveIssuer.Replace(" ", "").ToLower()}-allies",  ("subColor", subColor.Value)));
 
-        sb.AppendLine("\n" + Loc.GetString($"traitor-role-notes"));
-        sb.AppendLine(Loc.GetString($"traitor-{objectiveIssuer.Replace(" ", "").ToLower()}-goal"));
+        sb.AppendLine("\n" + Loc.GetString("traitor-role-notes"));
+        sb.Append(Loc.GetString($"traitor-{objectiveIssuer.Replace(" ", "").ToLower()}-goal", ("subColor", subColor.Value)));
 
         return sb.ToString();
     }

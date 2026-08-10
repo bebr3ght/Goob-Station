@@ -12,9 +12,12 @@
 - type: antag
   id: Heretic
   name: roles-antag-heretic-name
+  nameColor: '#8e24aa'
   antagonist: true
   setPreference: true
   objective: roles-antag-heretic-description
+  issuers:
+  - objective-issuer-heretic
   requirements:
   - !type:OverallPlaytimeRequirement
     time: 54000 # 15h

@@ -11,6 +11,7 @@ ninja-round-end-agent-name = ninja
 objective-issuer-spiderclan = [color=#33cc00]Spider Clan[/color]
 
 ninja-role-greeting =
-    I am an elite mercenary of the mighty Spider Clan!
-    Surprise is my weapon. Shadows are my armor. Without them, I am nothing.
-    Use your pinpointer to find the station. Good luck!
+    I am an [color={$subColor}]elite mercenary[/color] of the mighty [color={$subColor}]Spider Clan[/color]! [color={$subColor}]
+    Surprise[/color] is my weapon. [color={$subColor}]Shadows[/color] are my armor. Without them, I am [color={$subColor}]nothing[/color].
+    Use your [color={$subColor}]pinpointer[/color] to find the station. [color={$subColor}]
+    Good luck[/color]!

@@ -30,8 +30,11 @@ using System.Text;
 using Content.Server.Station.Components;
 using Content.Server._Goobstation.Objectives.Components;
 using Content.Shared.Station.Components;
+// Goobstation
+using Content.Server._Shitcode.GameTicking.Rules.Components;
+using Content.Server.GameTicking.Rules;
 
-namespace Content.Server.GameTicking.Rules;
+namespace Content.Server._Shitcode.GameTicking.Rules;
 
 public sealed class HereticRuleSystem : GameRuleSystem<HereticRuleComponent>
 {
@@ -42,19 +45,13 @@ public sealed class HereticRuleSystem : GameRuleSystem<HereticRuleComponent>
     [Dependency] private readonly ObjectivesSystem _objective = default!;
     [Dependency] private readonly IRobustRandom _rand = default!;
 
-    public static readonly SoundSpecifier BriefingSound =
-        new SoundPathSpecifier("/Audio/_Goobstation/Heretic/Ambience/Antag/Heretic/heretic_gain.ogg");
+    // Goobstation
+    [Dependency] private readonly RoleBriefingSystem _brief = default!;
 
     public static readonly SoundSpecifier BriefingSoundIntense =
         new SoundPathSpecifier("/Audio/_Goobstation/Heretic/Ambience/Antag/Heretic/heretic_gain_intense.ogg");
 
     public static readonly ProtoId<NpcFactionPrototype> HereticFactionId = "Heretic";
-
-    public static readonly ProtoId<NpcFactionPrototype> NanotrasenFactionId = "NanoTrasen";
-
-    public static readonly ProtoId<CurrencyPrototype> Currency = "KnowledgePoint";
-
-    static EntProtoId MindRole = "MindRoleHeretic";
 
     public override void Initialize()
     {
@@ -64,10 +61,20 @@ public sealed class HereticRuleSystem : GameRuleSystem<HereticRuleComponent>
         SubscribeLocalEvent<HereticRuleComponent, ObjectivesTextPrependEvent>(OnTextPrepend);
     }
 
+    // Goobstation: Briefing Improve - added Character Briefing assign, moved TryMakeHeretic logic in this method
     private void OnAntagSelect(Entity<HereticRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        TryMakeHeretic(args.EntityUid, ent.Comp);
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+        var briefing = Loc.GetString("heretic-role-greeting-short", ("subColor", subColor));
 
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_role.MindHasRole<HereticRoleComponent>(mindId, out var hereticRole))
+            return;
+        _antag.AddCharacterBriefing(hereticRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
+
+        // spawn RealityShift
         if (!TryGetRandomStation(out var station))
             return;
 
@@ -81,41 +88,6 @@ public sealed class HereticRuleSystem : GameRuleSystem<HereticRuleComponent>
             if (TryFindTileOnGrid(grid.Value, out _, out var coords))
                 Spawn(ent.Comp.RealityShift, coords);
         }
-    }
-
-    public bool TryMakeHeretic(EntityUid target, HereticRuleComponent rule)
-    {
-        if (!_mind.TryGetMind(target, out var mindId, out var mind))
-            return false;
-
-        _role.MindAddRole(mindId, MindRole.Id, mind, true);
-
-        // briefing
-        if (HasComp<MetaDataComponent>(target))
-        {
-            var briefingShort = Loc.GetString("heretic-role-greeting-short");
-
-            _antag.SendBriefing(target, Loc.GetString("heretic-role-greeting-fluff"), Color.MediumPurple, null);
-            _antag.SendBriefing(target, Loc.GetString("heretic-role-greeting"), Color.Red, BriefingSound);
-
-            if (_role.MindHasRole<HereticRoleComponent>(mindId, out var mr))
-                AddComp(mr.Value, new RoleBriefingComponent { Briefing = briefingShort }, overwrite: true);
-        }
-        _npcFaction.RemoveFaction(target, NanotrasenFactionId, false);
-        _npcFaction.AddFaction(target, HereticFactionId);
-
-        EnsureComp<HereticComponent>(target);
-
-        // add store
-        var store = EnsureComp<StoreComponent>(target);
-        foreach (var category in rule.StoreCategories)
-            store.Categories.Add(category);
-        store.CurrencyWhitelist.Add(Currency);
-        store.Balance.Add(Currency, 2);
-
-        rule.Minds.Add(mindId);
-
-        return true;
     }
 
     public void OnTextPrepend(Entity<HereticRuleComponent> ent, ref ObjectivesTextPrependEvent args)

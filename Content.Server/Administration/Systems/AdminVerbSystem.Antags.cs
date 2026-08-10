@@ -82,7 +82,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Content.Server._Goobstation.Wizard.Components;
-using Content.Server._DV.CosmicCult.Components; // DeltaV
+using Content.Server._DV.CosmicCult.Components;
+using Content.Server._Shitcode.GameTicking.Rules.Components; // DeltaV
 using Content.Server.Antag;
 using Content.Server.GameTicking;
 using Content.Server.GameTicking.Rules.Components;

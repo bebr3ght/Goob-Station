@@ -46,17 +46,18 @@ traitor-death-match-end-round-description-entry = {$originalName}'s PDA, with {$
 
 # TraitorRole
 traitor-role-greeting =
-    You are an agent sent by {$corporation} on behalf of [color = darkred]The Syndicate.[/color]
-    Your objectives and codewords are listed in the character menu.
-    Use your uplink to buy the tools you'll need for this mission.
-    Death to Nanotrasen!
+    You are an agent sent by [color={$subColor}]{$corporation}[/color] on behalf of [color={$subColor}]The Syndicate.[/color]
+    Your [color={$subColor}]objectives[/color] and [color={$subColor}]codewords[/color] are listed in the character menu.
+    Use your [color={$subColor}]uplink[/color] to buy the tools you'll need for this mission. [color={$subColor}]
+    Death to Nanotrasen![/color]
 traitor-role-codewords =
-    The codewords are: [color = lightgray]
+    { "" }
+    The codewords are: [color={$subColor}]
     {$codewords}.[/color]
     Codewords can be used in regular conversation to identify yourself discreetly to other syndicate agents.
     Listen for them, and keep them secret.
 traitor-role-uplink-code =
-    Set your ringtone to the notes [color = lightgray]{$code}[/color] to lock or unlock your uplink.
+    Set your ringtone to the notes [color={$subColor}]{$code}[/color] to lock or unlock your uplink.
     Remember to lock it after, or the stations crew will easily open it too!
 traitor-role-uplink-pen-code =
     Spin your pen to the combination [color = lightgray]{$code}[/color] to unlock your uplink.
@@ -67,9 +68,10 @@ traitor-role-uplink-implant =
 
 # don't need all the flavour text for character menu
 traitor-role-codewords-short =
-    The codewords are:
-    {$codewords}.
-traitor-role-uplink-code-short = Your uplink code is {$code}. Set it as your PDA ringtone to access uplink.
+    { "" }
+    The codewords are: [color={$subColor}]
+    {$codewords}[/color].
+traitor-role-uplink-code-short = Your uplink code is [color={$subColor}]{$code}[/color]. Set it as your PDA ringtone to access uplink.
 traitor-role-uplink-pen-code-short = Your pen uplink code is {$code}. Spin the pen to unlock. Locks when closed.
 traitor-role-uplink-implant-short = Your uplink was implanted. Access it from your hotbar.
 

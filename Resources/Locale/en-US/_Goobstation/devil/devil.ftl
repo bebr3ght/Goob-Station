@@ -1,5 +1,5 @@
 devil-roundend-name = Devil
-objective-issuer-devil = Devil
+objective-issuer-devil = [color=Salmon]Devil[/color]
 
 roundend-prepend-devil-contracts = Someone has made [color=red]{$number}[/color] successful contracts.
 roundend-prepend-devil-contracts-named = [color=white]{$name}[/color] has made [color=red]{$number}[/color] successful contracts.
@@ -7,11 +7,17 @@ roundend-prepend-devil-contracts-named = [color=white]{$name}[/color] has made [
 devil-component-examined = [color=darkred]{CAPITALIZE(POSS-ADJ($target))} eyes glow a faint red.[/color]
 condemned-component-examined = [color=chartreuse]{CAPITALIZE($target)}'s eyes are hollow and soulless.[/color]
 
-devil-role-greeting = You are a devil from the depths of hell,
-  who has possessed the body of {$playerName}
-  Corrupt mortals and collect souls through the use of contracts.
-  It is not in your interest to do tasks unrelated to your deals, they are beneath you.
-  Your true name is {$trueName} - Try to keep it a secret, will you?
+devil-role-greeting =
+    You are [color={$subColor}]a devil[/color] from the [color={$subColor}]depths of hell[/color],
+    who has possessed the body of [color={$subColor}]{$playerName}[/color]
+    Corrupt mortals and collect souls through the use of contracts.
+    It is not in your interest to do tasks unrelated to your deals, they are beneath you.
+    Your true name is [color={$subColor}]{$trueName}[/color] - Try to keep it a secret, will you?
+devil-role-briefing =
+    You are [color={$subColor}]a devil[/color] from the [color={$subColor}]depths of hell[/color],
+    who has possessed the body of [color={$subColor}]{$playerName}[/color]
+
+    Your true name is [color={$subColor}]{$trueName}[/color] - Try to keep it a secret, will you?
 
 devil-true-name-heard = The act of {$speaker} commanding {$target}'s true name compels {POSS-ADJ($target)} to stop.
 devil-true-name-heard-chaplain = The act of {$speaker}'s holy words commanding their true name burns away at {$target}'s very soul.

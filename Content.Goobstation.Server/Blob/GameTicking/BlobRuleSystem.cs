@@ -138,7 +138,7 @@ public sealed class BlobRuleSystem : GameRuleSystem<BlobRuleComponent>
                 Color.Red);
         }
         else if (blobTilesCount >= (stationUid.Comp?.StageBegin ?? StationBlobConfigComponent.DefaultStageBegin)
-                 && _roundEndSystem.ExpectedCountdownEnd != null && _emergency.EmergencyShuttleArrived) 
+                 && _roundEndSystem.ExpectedCountdownEnd != null && _emergency.EmergencyShuttleArrived)
         {
             _chatSystem.DispatchStationAnnouncement(stationUid,
                 Loc.GetString("blob-alert-shuttle-arrived"),
@@ -147,7 +147,7 @@ public sealed class BlobRuleSystem : GameRuleSystem<BlobRuleComponent>
                 null,
                 Color.OrangeRed);
         }
-        
+
         switch (blobRuleComp.Stage)
         {
             case BlobStage.Default when blobTilesCount >= (stationUid.Comp?.StageBegin ?? StationBlobConfigComponent.DefaultStageBegin):
@@ -319,7 +319,7 @@ public sealed class BlobRuleSystem : GameRuleSystem<BlobRuleComponent>
         comp.TransformationDelay = 10 * 60; // 10min
     }
 
-    private void AfterAntagSelected(EntityUid uid, BlobRuleComponent component, AfterAntagEntitySelectedEvent args)
+    private void AfterAntagSelected(Entity<BlobRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         MakeBlob(args.EntityUid);
     }

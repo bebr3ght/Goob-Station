@@ -67,6 +67,7 @@ public sealed class UplinkSystem : EntitySystem
         EntityUid user,
         FixedPoint2 balance,
         ProtoId<UplinkPreferencePrototype> preferenceId,
+        Color? subColor,
         out EntityUid? uplinkTarget,
         out SetupUplinkEvent? setupEvent)
     {
@@ -83,7 +84,7 @@ public sealed class UplinkSystem : EntitySystem
         EnsureComp<UplinkComponent>(uplinkTarget.Value);
         SetUplink(user, uplinkTarget.Value, balance);
 
-        var ev = new SetupUplinkEvent { User = user };
+        var ev = new SetupUplinkEvent { User = user, BriefingSubColor = subColor }; // Goobstation: Briefing Improve - added BriefingSubColor
         RaiseLocalEvent(uplinkTarget.Value, ref ev);
         setupEvent = ev;
 

@@ -85,9 +85,12 @@
 - type: antag
   id: Thief
   name: roles-antag-thief-name
+  nameColor: '#746694' # Goobstation: Briefing Improve
   antagonist: true
   setPreference: true
   objective: roles-antag-thief-objective
+  issuers:
+  - objective-issuer-thief # Goobstation: Briefing Improve
   guides: [ Thieves ]
 
 - type: startingGear

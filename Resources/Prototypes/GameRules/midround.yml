@@ -66,4 +66,5 @@
       mindRoles:
       - MindRoleThief
       briefing:
+        subColor: MediumPurple # Goobstation: Briefing Improve
         sound: "/Audio/Misc/thief_greeting.ogg"

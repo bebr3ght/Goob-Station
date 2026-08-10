@@ -114,6 +114,9 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
     [Dependency] private readonly SharedRevolutionarySystem _revolutionarySystem = default!;
     [Dependency] private readonly ChatSystem _chatSystem = default!;
 
+    // Goobstation
+    [Dependency] private readonly RoleBriefingSystem _brief = default!;
+
     //Used in OnPostFlash, no reference to the rule component is available
     public readonly ProtoId<NpcFactionPrototype> RevolutionaryNpcFaction = "Revolutionary";
     public readonly ProtoId<NpcFactionPrototype> RevPrototypeId = "Rev";
@@ -127,10 +130,26 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
         SubscribeLocalEvent<CommunicationConsoleCallShuttleAttemptEvent>(OnTryCallEvac); // goob edit
         SubscribeLocalEvent<HeadRevolutionaryComponent, MobStateChangedEvent>(OnHeadRevMobStateChanged);
 
-        SubscribeLocalEvent<RevolutionaryRoleComponent, GetBriefingEvent>(OnGetBriefing);
+        // Goobstation: Briefing Improve - comment out unnecessary subs & add AfterAntagEntitySelectedEvent
+        SubscribeLocalEvent<RevolutionaryRuleComponent, AfterAntagEntitySelectedEvent>(AfterAntagSelected);
+        // SubscribeLocalEvent<RevolutionaryRoleComponent, GetBriefingEvent>(OnGetBriefing);
 
     }
 
+    // Goobstation: Briefing Improve
+    private void AfterAntagSelected(Entity<RevolutionaryRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
+    {
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var briefing = Loc.GetString("head-rev-briefing", ("subColor", subColor));
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+
+
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_role.MindHasRole<RevolutionaryRoleComponent>(mindId, out var revolutionaryRole))
+            return;
+        _antag.AddCharacterBriefing(revolutionaryRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
+    }
     protected override void Started(EntityUid uid, RevolutionaryRuleComponent component, GameRuleComponent gameRule, GameRuleStartedEvent args)
     {
         base.Started(uid, component, gameRule, args);
@@ -278,6 +297,7 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
         _npcFaction.AddFaction(ev.Target, RevolutionaryNpcFaction);
         var revComp = EnsureComp<RevolutionaryComponent>(ev.Target);
 
+        var headRevMindId = new EntityUid(); // Goobstation: Briefing Improve
         if (ev.User != null)
         {
             _adminLogManager.Add(LogType.Mind,
@@ -286,6 +306,7 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
 
             if (_mind.TryGetMind(ev.User.Value, out var revMindId, out _))
             {
+                headRevMindId = revMindId;
                 if (_role.MindHasRole<RevolutionaryRoleComponent>(revMindId, out var role))
                     role.Value.Comp2.ConvertedCount++;
             }
@@ -297,7 +318,18 @@ public sealed class RevolutionaryRuleSystem : GameRuleSystem<RevolutionaryRuleCo
         }
 
         if (mind is { UserId: not null } && _player.TryGetSessionById(mind.UserId, out var session))
-            _antag.SendBriefing(session, Loc.GetString("rev-role-greeting"), Color.Red, revComp.RevStartSound);
+        {
+            // Goobstation: Briefing Improve - add CharacterBriefing assign
+            if (!_role.MindHasRole<RevolutionaryRoleComponent>(mindId, out var revRole) ||
+                !_role.MindHasRole<RevolutionaryRoleComponent>(headRevMindId, out var role) ||
+                !TryComp<RoleBriefingComponent>(role.Value.Owner, out var headBriefing))
+                return;
+            var subColor = headBriefing.BriefingSubColor ?? headBriefing.BriefingColor ?? Color.AntiqueWhite;
+            var briefing = Loc.GetString("rev-role-greeting", ("subColor", subColor));
+
+            _antag.AddCharacterBriefing(revRole.Value.Owner, briefing, headBriefing.BriefingColor, headBriefing.Bold);
+            _antag.SendBriefing(session, briefing, headBriefing.BriefingColor, revComp.RevStartSound);
+        }
 
         // Goobstation - Check lose if command was converted
         if (!TryComp<CommandStaffComponent>(ev.Target, out var commandComp))

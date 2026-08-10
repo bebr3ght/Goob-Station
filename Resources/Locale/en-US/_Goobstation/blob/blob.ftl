@@ -133,14 +133,20 @@ blob-health-alert-desc = Your core's health. You will die if it reaches zero.
 
 # Greeting
 blob-role-greeting =
-    You are blob - a parasitic space creature capable of destroying entire stations.
-        Your goal is to survive and grow as large as possible.
-        You are almost invulnerable to physical damage, but heat can still hurt you.
-        Use Alt+LMB to upgrade normal blob tiles to strong blob and strong blob to reflective blob.
-        Make sure to place resource blobs to generate resources.
-        Keep in mind that resource blobs and factories will only work when next to node blobs or cores.
-        You may use + or +e in chat to use the Blobmind to talk to your minions.
+    You are a [color={$subColor}]Blob[/color] - a parasitic space creature capable of destroying entire stations.
+    Your goal is to [color={$subColor}]survive and grow[/color] as large as possible.
+    You are almost invulnerable to [color={$subColor}]physical damage[/color], but [color={$subColor}]heat[/color] can still hurt you.
+
+    Use [color={$subColor}]Alt+LMB[/color] to upgrade [color={$subColor}]Normal Blob[/color] tiles to [color={$subColor}]Strong Blob[/color], and [color={$subColor}]Strong Blob[/color] to [color={$subColor}]Reflective Blob[/color].
+    Make sure to place [color={$subColor}]Resource Blobs[/color] to generate resources.
+    Keep in mind that [color={$subColor}]Resource Blobs[/color] and [color={$subColor}]Factories[/color] will only work when placed next to [color={$subColor}]Node Blobs[/color] or [color={$subColor}]Cores[/color]. [italic]
+
+    You may use [color={$subColor}]+[/color] or [color={$subColor}]+e[/color] in chat to use the [color={$subColor}]Blobmind[/color] to talk to your minions.[/italic]
 blob-zombie-greeting = You were infected and raised by a blob spore. Now you must help the blob take over the station. Use +e in chat to talk in the Blobmind.
+
+# Briefing
+blob-role-briefing =
+    You are a [color={$subColor}]Blob[/color] - a parasitic space creature capable of destroying entire stations.
 
 # End round
 blob-round-end-result =

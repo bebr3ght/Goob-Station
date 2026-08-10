@@ -1,6 +1,9 @@
 - type: antag
   id: Contractor
   name: roles-antag-contractor-name
+  nameColor: Crimson
   antagonist: true
   setPreference: false
   objective: roles-antag-contractor-objectives
+  issuers:
+  - objective-issuer-syndicate

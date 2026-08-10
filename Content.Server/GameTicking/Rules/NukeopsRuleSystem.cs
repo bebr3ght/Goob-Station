@@ -109,6 +109,9 @@ using Content.Server.Station.Systems;
 using Content.Server.Chat.Systems;
 using Robust.Server.Player;
 using Robust.Shared.Prototypes;
+// Goobstation
+using Content.Server.Mind;
+using Content.Shared.Roles;
 
 namespace Content.Server.GameTicking.Rules;
 
@@ -125,6 +128,9 @@ public sealed class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleComponent>
     [Dependency] private readonly StationSystem _stationSystem = default!;
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly IPlayerManager _playerManager = default!;
+    [Dependency] private readonly MindSystem _mind = default!;
+    [Dependency] private readonly SharedRoleSystem _roleSystem = default!;
+    [Dependency] private readonly RoleBriefingSystem _brief = default!;
     // goob edit end
 
     private static readonly ProtoId<CurrencyPrototype> TelecrystalCurrencyPrototype = "Telecrystal";
@@ -145,7 +151,8 @@ public sealed class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleComponent>
         SubscribeLocalEvent<NukeOperativeComponent, MobStateChangedEvent>(OnMobStateChanged);
         SubscribeLocalEvent<NukeOperativeComponent, EntityZombifiedEvent>(OnOperativeZombified);
 
-        SubscribeLocalEvent<NukeopsRoleComponent, GetBriefingEvent>(OnGetBriefing);
+        // Goobstation: Briefing Improve - comment out unnecessary subs
+        // SubscribeLocalEvent<NukeopsRoleComponent, GetBriefingEvent>(OnGetBriefing);
 
         SubscribeLocalEvent<ConsoleFTLAttemptEvent>(OnShuttleFTLAttempt);
         SubscribeLocalEvent<WarDeclaredEvent>(OnWarDeclared);
@@ -582,16 +589,24 @@ public sealed class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleComponent>
         nukeops.RoundEndBehavior = RoundEndBehavior.Nothing;
     }
 
+    // Goobstation: Briefing Improve - added Character Briefing assign
     private void OnAfterAntagEntSelected(Entity<NukeopsRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
+        var entUid = args.EntityUid;
         var target = (ent.Comp.TargetStation is not null) ? Name(ent.Comp.TargetStation.Value) : "the target";
+        var subColor = args.Def.Briefing?.SubColor ?? Color.Red;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+        var greeting = Loc.GetString($"{ent.Comp.LocalePrefix}welcome",
+            ("station", target),
+            ("name", Name(ent)),
+            ("subColor", subColor));
+        var briefing = Loc.GetString("nukeops-briefing", ("subColor", subColor));
+        _antag.SendBriefing(entUid, greeting, args.Def.Briefing?.Color, ent.Comp.GreetSoundNotification);
 
-        _antag.SendBriefing(args.Session,
-            Loc.GetString($"{ent.Comp.LocalePrefix}welcome",
-                ("station", target),
-                ("name", Name(ent))),
-            Color.Red,
-            ent.Comp.GreetSoundNotification);
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_roleSystem.MindHasRole<NukeopsRoleComponent>(mindId, out var nukeOpsRole))
+            return;
+        _antag.AddCharacterBriefing(nukeOpsRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, args.Def.Briefing?.SubColor);
     }
 
     private void OnGetBriefing(Entity<NukeopsRoleComponent> role, ref GetBriefingEvent args)

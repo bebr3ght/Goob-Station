@@ -51,8 +51,11 @@ objective-issuer-abductors = [color=#FD0098]Mothership[/color]
 objective-condition-abduct-title = Abduct {$count} person.
 objective-condition-abduct-description = (use the Gizmo on a subdued victim, then use the Gizmo on the abductor console and select the attract action), then replace their heart with one of the glands, put them in the experimenter, and press complete experiment.
 
-abductor-role-greeting = You are a professional combat scientist of a high-tech race. Your task is to abduct humans, conduct experiments on them, and return them alive for the purity of the experiment. It is not in your interest to destroy the station, kill, or assist the crew.
-                        Use + or +a in chat to talk in the Glorpmind.
+abductor-role-greeting =
+    You are a [color={$subColor}]professional combat scientist[/color] of [color={$subColor}]a high-tech race[/color].
+    Your task is to [color={$subColor}]abduct humans[/color], [color={$subColor}]conduct experiments[/color] on them, and [color={$subColor}]return them alive[/color] for the purity of the experiment.
+    It is [color={$subColor}]not[/color] in your interest to destroy the station, kill, or assist the crew. [italic]
+    Use [color={$subColor}]+[/color] or [color={$subColor}]+a[/color] in chat to talk in the [color={$subColor}]Glorpmind[/color].[/italic]
 
 roles-antag-abductor-objective = Kidnap station crew and perform your experiments on them!
 

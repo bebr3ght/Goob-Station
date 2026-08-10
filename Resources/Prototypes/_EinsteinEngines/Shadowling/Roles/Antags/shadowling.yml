@@ -1,9 +1,12 @@
 - type: antag
   id: Shadowling
   name: roles-antag-shadowling-name
+  nameColor: Magenta # Goobstation: Briefing Improve
   antagonist: true
   setPreference: true
   objective: roles-antag-shadowling-description
+  issuers:
+  - objective-issuer-shadowling # Goobstation: Briefing Improve
   requirements:
   - !type:OverallPlaytimeRequirement
     time: 54000 # 15 hours
@@ -18,6 +21,9 @@
 - type: antag
   id: Thrall
   name: roles-antag-thrall-name
+  nameColor: Magenta # Goobstation: Briefing Improve
   antagonist: true
   setPreference: false
   objective: roles-antag-thrall-description
+  issuers:
+  - objective-issuer-shadowling # Goobstation: Briefing Improve

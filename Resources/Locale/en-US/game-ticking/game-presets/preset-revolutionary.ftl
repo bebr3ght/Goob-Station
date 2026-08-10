@@ -18,15 +18,15 @@ roles-antag-rev-head-name = Head Revolutionary
 roles-antag-rev-head-objective = Your objective is to take over the station by converting people to your cause and killing all Command staff on station.
 
 head-rev-role-greeting =
-    You are a Head Revolutionary.
-    You are tasked with removing all of Command from station via death, exilement or imprisonment.
-    The Syndicate has sponsored you with a manifesto that persuades the crew to your side.
-    Beware, this won't work on Security or Command - their loyalty is unwavering.
-    Viva la revolución!
+    You are a [color={$subColor}]Head Revolutionary[/color].
+    You are tasked with [color={$subColor}]removing all of Command[/color] from station via death, exilement or imprisonment.
+    The [color={$subColor}]Syndicate[/color] has sponsored you with a [color={$subColor}]manifesto[/color] that persuades the crew to your side.
+    Beware, this won't work on [color={$subColor}]Security[/color] or [color={$subColor}]Command[/color] - their loyalty is unwavering. [color={$subColor}]
+    Viva la revolución![/color]
 
 head-rev-briefing =
-    Use the manifesto to convert people to your cause.
-    Get rid of all heads to take over the station.
+    Use the [color={$subColor}]manifesto[/color] to convert people to your cause.
+    Get rid of [color={$subColor}]all heads[/color] to take over the station.
 
 head-rev-break-mindshield = The Mindshield neutralized hypnotic powers, but its functionality has been compromised!
 
@@ -38,12 +38,12 @@ roles-antag-rev-objective = Your objective is to ensure the safety and follow th
 rev-break-control = {$name} has remembered their true allegiance!
 
 rev-role-greeting =
-    You are a Revolutionary.
-    You are tasked with taking over the station and protecting the Head Revolutionaries.
-    Get rid of all of or convert the Command staff.
-    Viva la revolución!
+    You are a [color={$subColor}]Revolutionary[/color].
+    You are tasked with [color={$subColor}]taking over the station[/color] and protecting the [color={$subColor}]Head Revolutionaries[/color].
+    Get rid of all of or convert the [color={$subColor}]Command staff[/color]. [color={$subColor}]
+    Viva la revolución![/color]
 
-rev-briefing = Help your head revolutionaries convert or get rid of every head to take over the station.
+rev-briefing = Help your [color={$subColor}]head revolutionaries[/color] convert or get rid of every [color={$subColor}]head[/color] to take over the station.
 
 ## General
 

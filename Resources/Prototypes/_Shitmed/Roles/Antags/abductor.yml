@@ -11,26 +11,38 @@
 - type: antag
   id: LoneAbductorAntag
   name: abductor-lone-ghost-role-name
+  nameColor: '#FD0098' # Goobstation: Briefing Improve
   antagonist: true
   objective: roles-antag-abductor-objective
+  issuers:
+  - objective-issuer-abductors # Goobstation: Briefing Improve
 
 - type: antag
   id: AbductorAgentAntag
   name: abductor-agent-ghost-role-name
+  nameColor: '#FD0098' # Goobstation: Briefing Improve
   antagonist: true
   objective: roles-antag-abductor-objective
+  issuers:
+  - objective-issuer-abductors # Goobstation: Briefing Improve
 
 - type: antag
   id: AbductorScientistAntag
   name: abductor-scientist-ghost-role-name
+  nameColor: '#FD0098' # Goobstation: Briefing Improve
   antagonist: true
   objective: roles-antag-abductor-objective
+  issuers:
+  - objective-issuer-abductors # Goobstation: Briefing Improve
 
 - type: antag
   id: AbductorVictimAntag
   name: abductor-victim-role-name
+  nameColor: '#FD0098' # Goobstation: Briefing Improve
   antagonist: true
   objective: roles-antag-abductor-victim
+  issuers:
+  - objective-issuer-voices # Goobstation: Briefing Improve
 
 - type: roleType
   id: AbductorVictimRole

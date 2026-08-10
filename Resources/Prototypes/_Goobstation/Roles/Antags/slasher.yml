@@ -4,6 +4,8 @@
   antagonist: true
   setPreference: false
   objective: roles-antag-slasher-objectives
+  issuers:
+  - objective-issuer-slasher
   guides: [ Slasher ]
 
 - type: entity

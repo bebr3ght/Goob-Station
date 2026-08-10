@@ -22,6 +22,7 @@
       briefing:
         text: slaughter-role-greeting
         color: Red
+        subColor: Crimson
         sound: /Audio/_Goobstation/SlaughterDemon/briefing.ogg
       components:
       - type: RandomMetadata
@@ -54,6 +55,7 @@
       briefing:
         text: laughter-role-greeting
         color: Pink
+        subColor: HotPink
         sound: /Audio/_Goobstation/Vehicle/Clowncar/clowncar_fart.ogg
       components:
       - type: RandomMetadata
@@ -83,6 +85,7 @@
       briefing:
         text: slaughter-role-greeting
         color: Red
+        subColor: Crimson
         sound: /Audio/Misc/narsie_rises.ogg
       components:
       - type: RandomMetadata

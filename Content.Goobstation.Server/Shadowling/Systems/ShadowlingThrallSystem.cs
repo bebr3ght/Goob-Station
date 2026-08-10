@@ -1,5 +1,6 @@
 using Content.Goobstation.Shared.Devil;
 using Content.Goobstation.Shared.Overlays;
+using Content.Goobstation.Shared.Shadowling;
 using Content.Goobstation.Shared.Shadowling.Components;
 using Content.Goobstation.Shared.Shadowling.Components.Abilities.Thrall;
 using Content.Server.Antag;
@@ -28,21 +29,39 @@ public sealed class ShadowlingThrallSystem : EntitySystem
         SubscribeLocalEvent<ThrallComponent, ComponentStartup>(OnStartup);
         SubscribeLocalEvent<ThrallComponent, ComponentShutdown>(OnRemove);
         SubscribeLocalEvent<ThrallComponent, ExaminedEvent>(OnExamined);
+        SubscribeLocalEvent<ThrallComponent, ThrallInitiatedEvent>(OnThrallInitiated);
     }
 
     public ProtoId<CollectiveMindPrototype> ShadowMind = "Shadowmind";
+
+    private void OnThrallInitiated(EntityUid uid, ThrallComponent component, ThrallInitiatedEvent args)
+    {
+        if (!_mind.TryGetMind(uid, out var mindId, out _) ||
+            !_mind.TryGetMind(args.Converter, out var lingMind, out _))
+            return;
+        if (!_roles.MindHasRole<ShadowlingRoleComponent>(lingMind, out var lingRole) ||
+            !TryComp<RoleBriefingComponent>(lingRole, out var briefingComp))
+            return;
+
+        var subColor = briefingComp.BriefingSubColor ?? briefingComp.BriefingColor ?? Color.Orange;
+        var characterBriefing = Loc.GetString("thrall-briefing", ("subColor", subColor));
+        var briefing = Loc.GetString("thrall-role-greeting", ("subColor", subColor));
+        var bold = briefingComp.Bold;
+
+        if (!_roles.MindHasRole<ShadowlingRoleComponent>(mindId, out var shadowlingRole))
+            return;
+        _antag.AddCharacterBriefing(shadowlingRole.Value.Owner, characterBriefing, briefingComp.BriefingColor, bold, subColor);
+        _antag.SendBriefing(uid, briefing, briefingComp.BriefingColor, component.ThrallConverted);
+    }
+
     private void OnStartup(EntityUid uid, ThrallComponent component, ComponentStartup args)
     {
-        // antag stuff
         if (!_mind.TryGetMind(uid, out var mindId, out _))
             return;
 
         if (!_roles.MindHasRole<ShadowlingRoleComponent>(mindId))
-            _roles.MindAddRole(mindId, "MindRoleThrall");
-
+            _roles.MindAddRole(mindId, "MindRoleThrall", silent: true);
         EnsureComp<CollectiveMindComponent>(uid).Channels.Add(ShadowMind);
-
-        _antag.SendBriefing(uid, Loc.GetString("thrall-role-greeting"), Color.MediumPurple, component.ThrallConverted);
     }
 
     private void OnRemove(EntityUid uid, ThrallComponent component, ComponentShutdown args)

@@ -236,6 +236,8 @@ public abstract class SharedShadowlingSystem : EntitySystem
 
         var thrall = EnsureComp<ThrallComponent>(target);
         thrall.Converter = uid;
+        var ev = new ThrallInitiatedEvent(uid);
+        RaiseLocalEvent(target, ev);
         var comps = _protoMan.Index(components);
         EntityManager.AddComponents(target, comps);
 

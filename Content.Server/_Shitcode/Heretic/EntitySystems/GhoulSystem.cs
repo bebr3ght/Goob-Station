@@ -49,6 +49,7 @@ using Content.Shared.Nutrition.Components;
 using Content.Shared.RatKing;
 using Robust.Server.Audio;
 using Content.Goobstation.Shared.Religion;
+using Content.Server._Shitcode.GameTicking.Rules;
 using Content.Server.GameTicking.Rules;
 using Content.Server.Heretic.Abilities;
 using Content.Server.NPC;

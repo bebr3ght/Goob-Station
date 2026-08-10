@@ -1,5 +1,8 @@
 - type: antag
   id: Xenomorph
   name: roles-antag-xenomorph-name
+  nameColor: '#8c3986' # Goobstation: Briefing Improve
   antagonist: true
   objective: roles-antag-xenomorph-objective
+  issuers: # Goobstation: Briefing Improve
+  - objective-issuer-xenomorph-hive

@@ -30,9 +30,12 @@
 - type: antag
   id: Wizard
   name: roles-antag-wizard-name
+  nameColor: Cyan
   antagonist: true
   setPreference: true
   objective: roles-antag-wizard-description
+  issuers:
+  - objective-issuer-wizard-federation
   requirements:
   - !type:OverallPlaytimeRequirement
     time: 126000 # 35h

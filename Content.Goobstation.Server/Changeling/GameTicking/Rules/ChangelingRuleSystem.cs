@@ -18,15 +18,8 @@ using Content.Server.Antag;
 using Content.Server.GameTicking.Rules;
 using Content.Server.Mind;
 using Content.Server.Objectives;
-using Content.Server.Roles;
 using Content.Shared._EinsteinEngines.Silicon.Components;
-using Content.Shared.NPC.Prototypes;
-using Content.Shared.NPC.Systems;
 using Content.Shared.Roles;
-using Content.Shared.Store;
-using Content.Shared.Store.Components;
-using Robust.Shared.Audio;
-using Robust.Shared.Prototypes;
 
 namespace Content.Goobstation.Server.Changeling.GameTicking.Rules;
 
@@ -35,22 +28,9 @@ public sealed class ChangelingRuleSystem : GameRuleSystem<ChangelingRuleComponen
     [Dependency] private readonly MindSystem _mind = default!;
     [Dependency] private readonly AntagSelectionSystem _antag = default!;
     [Dependency] private readonly SharedRoleSystem _role = default!;
-    [Dependency] private readonly NpcFactionSystem _npcFaction = default!;
     [Dependency] private readonly ObjectivesSystem _objective = default!;
 
-    public readonly SoundSpecifier BriefingSound = new SoundPathSpecifier("/Audio/_Goobstation/Ambience/Antag/changeling_start.ogg");
-
-    public readonly ProtoId<AntagPrototype> ChangelingPrototypeId = "Changeling";
-
-    public readonly ProtoId<NpcFactionPrototype> ChangelingFactionId = "Changeling";
-
-    public readonly ProtoId<NpcFactionPrototype> NanotrasenFactionId = "NanoTrasen";
-
-    public readonly ProtoId<CurrencyPrototype> Currency = "EvolutionPoint";
-
     public readonly int StartingCurrency = 16;
-
-    [ValidatePrototypeId<EntityPrototype>] EntProtoId mindRole = "MindRoleChangeling";
 
     public override void Initialize()
     {
@@ -60,49 +40,26 @@ public sealed class ChangelingRuleSystem : GameRuleSystem<ChangelingRuleComponen
         SubscribeLocalEvent<ChangelingRuleComponent, ObjectivesTextPrependEvent>(OnTextPrepend);
     }
 
-    private void OnSelectAntag(EntityUid uid, ChangelingRuleComponent comp, ref AfterAntagEntitySelectedEvent args)
+    private void OnSelectAntag(Entity<ChangelingRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        MakeChangeling(args.EntityUid, comp);
-    }
-    public bool MakeChangeling(EntityUid target, ChangelingRuleComponent rule)
-    {
-        if (HasComp<SiliconComponent>(target))
-            return false;
+        var entUid = args.EntityUid;
 
-        if (!_mind.TryGetMind(target, out var mindId, out var mind))
-            return false;
+        if (HasComp<SiliconComponent>(entUid))
+            return;
 
-        _role.MindAddRole(mindId, mindRole.Id, mind, true);
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
 
-        // briefing
-        // Everypony has a metadata component, why are you trycomp'ing it?
-        if (TryComp<MetaDataComponent>(target, out var metaData))
-        {
-            var briefing = Loc.GetString("changeling-role-greeting", ("name", metaData?.EntityName ?? "Unknown"));
-            var briefingShort = Loc.GetString("changeling-role-greeting-short", ("name", metaData?.EntityName ?? "Unknown"));
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_role.MindHasRole<ChangelingRoleComponent>(mindId, out var changelingRole))
+            return;
 
-            _antag.SendBriefing(target, briefing, Color.Yellow, BriefingSound);
+        var name = Name(entUid);
+        var briefing = args.Def.Briefing?.Text ?? Loc.GetString("changeling-role-greeting", ("name", name), ("subColor", subColor));
+        var briefingShort = args.Def.Briefing?.Text ?? Loc.GetString("changeling-role-greeting-short", ("name", name), ("subColor", subColor));
 
-            if (_role.MindHasRole<ChangelingRoleComponent>(mindId, out var mr))
-                AddComp(mr.Value, new RoleBriefingComponent { Briefing = briefingShort }, overwrite: true);
-        }
-        // hivemind stuff
-        _npcFaction.RemoveFaction(target, NanotrasenFactionId, false);
-        _npcFaction.AddFaction(target, ChangelingFactionId);
-
-        // make them a changeling
-        EnsureComp<ChangelingComponent>(target);
-
-        // add store
-        var store = EnsureComp<StoreComponent>(target);
-        foreach (var category in rule.StoreCategories)
-            store.Categories.Add(category);
-        store.CurrencyWhitelist.Add(Currency);
-        store.Balance.Add(Currency, StartingCurrency);
-
-        rule.ChangelingMinds.Add(mindId);
-
-        return true;
+        _antag.SendBriefing(entUid, briefing, args.Def.Briefing?.Color, null);
+        _antag.AddCharacterBriefing(changelingRole.Value.Owner, briefingShort, args.Def.Briefing?.Color, bold, subColor);
     }
 
     private void OnTextPrepend(EntityUid uid, ChangelingRuleComponent comp, ref ObjectivesTextPrependEvent args)

@@ -277,6 +277,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeopsCommander
+      briefing:
+        subColor: Crimson # Goobstation: Briefing Improve
     - prefRoles: [ NukeopsMedic ]
       fallbackRoles: [ Nukeops, NukeopsCommander ]
       spawnerPrototype: SpawnPointNukeopsMedic
@@ -298,6 +300,8 @@
         speedModifier: 2
       mindRoles:
       - MindRoleNukeopsMedic
+      briefing:
+        subColor: Crimson # Goobstation: Briefing Improve
     - prefRoles: [ Nukeops ]
       fallbackRoles: [ NukeopsCommander, NukeopsMedic ]
       spawnerPrototype: SpawnPointNukeopsOperative
@@ -319,6 +323,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeops
+      briefing:
+        subColor: Crimson # Goobstation: Briefing Improve
 
 # Goobstation
 - type: entity
@@ -380,6 +386,8 @@
         - CommandStaff # Goobstation
         - AntagImmune
         - Changeling # Goobstation
+      briefing:
+        subColor: Crimson # Goobstation: Briefing Improve
       lateJoinAdditional: true
       mindRoles:
       - MindRoleTraitor
@@ -405,6 +413,7 @@
       briefing:
         text: head-rev-role-greeting
         color: CornflowerBlue
+        subColor: AntiqueWhite # Goobstation: Briefing Improve
         sound: "/Audio/Ambience/Antag/headrev_start.ogg"
       startingGear: HeadRevGear
       components:
@@ -505,7 +514,8 @@
         - AntagImmune
       briefing:
         text: zombie-patientzero-role-greeting
-        color: Plum
+        color: OliveDrab
+        subColor: Plum # Goobstation: Briefing Improve
         sound: "/Audio/Ambience/Antag/zombie_start.ogg"
       components:
       - type: PendingZombie

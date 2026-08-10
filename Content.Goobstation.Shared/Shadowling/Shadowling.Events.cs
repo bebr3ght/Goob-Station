@@ -12,3 +12,13 @@ public sealed class ShadowlingAscendEvent(EntityUid ascended) : EntityEventArgs
 /// Raised when a shadowling dies. For ending their antag-ness.
 /// </summary>
 public sealed class ShadowlingDeathEvent : EntityEventArgs;
+
+
+public sealed class ThrallInitiatedEvent : EntityEventArgs
+{
+    public EntityUid Converter;
+    public ThrallInitiatedEvent(EntityUid converter)
+    {
+        Converter = converter;
+    }
+}

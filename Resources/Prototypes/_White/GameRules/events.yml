@@ -33,5 +33,6 @@
       briefing:
         text: xenomorph-role-greeting
         color: "#8c3986"
+        subColor: Orchid # Goobstation: Briefing Improve
       mindRoles:
       - MindRoleXenomorph

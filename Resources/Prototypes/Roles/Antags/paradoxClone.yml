@@ -1,8 +1,11 @@
 - type: antag
   id: ParadoxClone
   name: roles-antag-paradox-clone-name
+  nameColor: lightblue # Goobstation: Briefing Improve
   antagonist: true
   objective: roles-antag-paradox-clone-objective
+  issuers:
+  - objective-issuer-paradox # Goobstation: Briefing Improve
   setPreference: false
 
 # they need to be able to espace when spawning inside a locked room

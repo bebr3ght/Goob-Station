@@ -47,6 +47,9 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 using static Content.Client.CharacterInfo.CharacterInfoSystem;
 using static Robust.Client.UserInterface.Controls.BaseButton;
+// Goobstation
+using Content.Shared.CharacterInfo;
+using Content.Shared.Objectives;
 
 namespace Content.Client.UserInterface.Systems.Character;
 
@@ -59,13 +62,6 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
 
     [UISystemDependency] private readonly CharacterInfoSystem _characterInfo = default!;
     [UISystemDependency] private readonly SpriteSystem _sprite = default!;
-
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        SubscribeNetworkEvent<MindRoleTypeChangedEvent>(OnRoleTypeChanged);
-    }
 
     private CharacterWindow? _window;
     private MenuButton? CharacterButton => UIManager.GetActiveUIWidgetOrNull<MenuBar.Widgets.GameTopMenuBar>()?.CharacterButton;
@@ -149,6 +145,7 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
         CharacterButton.Pressed = true;
     }
 
+    // Goobstation: Briefing Improve - heavily edited. Added supervisors, multiple antag roles "tabs", improved character menu UI
     private void CharacterUpdated(CharacterData data)
     {
         if (_window == null)
@@ -156,97 +153,139 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
             return;
         }
 
-        var (entity, job, objectives, briefing, entityName) = data;
+        var (entity, job, supervisors, antagRoles, entityName) = data;
 
         _window.SpriteView.SetEntity(entity);
 
-        UpdateRoleType();
-
-        _window.NameLabel.Text = entityName;
-        _window.SubText.Text = job;
-        _window.Objectives.RemoveAllChildren();
-        _window.ObjectivesLabel.Visible = objectives.Any();
-
-        foreach (var (groupId, conditions) in objectives)
+        _window.CharacterMainInfoBox.RemoveAllChildren();
+        var nameLabel = new Label
         {
-            var objectiveControl = new CharacterObjectiveControl
+            Text = entityName,
+        };
+        _window.CharacterMainInfoBox.AddChild(nameLabel);
+        if (!string.IsNullOrEmpty(job))
+        {
+            var jobLabel = new Label
             {
-                Orientation = BoxContainer.LayoutOrientation.Vertical,
-                Modulate = Color.Gray
+                Text = "Job: " + job,
+                StyleClasses = { "LabelSubText" }
             };
-
-
-            var objectiveText = new FormattedMessage();
-            objectiveText.TryAddMarkup(groupId, out _);
-
-            var objectiveLabel = new RichTextLabel
-            {
-                StyleClasses = { StyleNano.StyleClassTooltipActionTitle }
-            };
-            objectiveLabel.SetMessage(objectiveText);
-
-            objectiveControl.AddChild(objectiveLabel);
-
-            foreach (var condition in conditions)
-            {
-                var conditionControl = new ObjectiveConditionsControl();
-                conditionControl.ProgressTexture.Texture = _sprite.Frame0(condition.Icon);
-                conditionControl.ProgressTexture.Progress = condition.Progress;
-                var titleMessage = new FormattedMessage();
-                var descriptionMessage = new FormattedMessage();
-                titleMessage.AddText(condition.Title);
-                descriptionMessage.AddText(condition.Description);
-
-                conditionControl.Title.SetMessage(titleMessage);
-                conditionControl.Description.SetMessage(descriptionMessage);
-
-                objectiveControl.AddChild(conditionControl);
-            }
-
-            _window.Objectives.AddChild(objectiveControl);
+            _window.CharacterMainInfoBox.AddChild(jobLabel);
         }
 
-        if (briefing != null)
+        if (!string.IsNullOrEmpty(supervisors))
         {
-            var briefingControl = new ObjectiveBriefingControl();
-            var text = new FormattedMessage();
-            text.PushColor(Color.Yellow);
-            text.AddText(briefing);
-            briefingControl.Label.SetMessage(text);
-            _window.Objectives.AddChild(briefingControl);
+            var supervisorsLabel = new Label
+            {
+                Text = "Supervisors: " + supervisors,
+                StyleClasses = { "LabelSubText" }
+            };
+            _window.CharacterMainInfoBox.AddChild(supervisorsLabel);
+        }
+
+        _window.SpecialRoleInfo.RemoveAllChildren();
+
+        var roleControls = new Dictionary<string, CharacterObjectiveControl>();
+        foreach (var antagRole in antagRoles)
+        {
+            CharacterObjectiveControl roleControl;
+
+            if (roleControls.TryGetValue(antagRole.RoleTitle, out var existingControl))
+            {
+                roleControl = existingControl;
+            }
+            else
+            {
+                roleControl = CreateAntagRoleControl(antagRole);
+                _window.SpecialRoleInfo.AddChild(roleControl);
+                roleControls[antagRole.RoleTitle] = roleControl;
+            }
+
+            AddObjectivesToRole(roleControl, antagRole.Objectives);
         }
 
         var controls = _characterInfo.GetCharacterInfoControls(entity);
         foreach (var control in controls)
         {
-            _window.Objectives.AddChild(control);
+            _window.SpecialRoleInfo.AddChild(control);
         }
 
-        _window.RolePlaceholder.Visible = briefing == null && !controls.Any() && !objectives.Any();
+        _window.RolePlaceholder.Visible = antagRoles.Count == 0 && controls.Count == 0;
     }
 
-    private void OnRoleTypeChanged(MindRoleTypeChangedEvent ev, EntitySessionEventArgs _)
+    // Goobstation: Briefing Improve
+    private CharacterObjectiveControl CreateAntagRoleControl(AntagRoleInfo antagRole)
     {
-        UpdateRoleType();
+        var roleControl = new CharacterObjectiveControl();
+
+        var roleTitleMsg = new FormattedMessage();
+        roleTitleMsg.PushColor(antagRole.RoleTitleColor ?? antagRole.Color);
+        roleTitleMsg.PushTag(new MarkupNode("bold", null, null));
+        roleTitleMsg.TryAddMarkup($"[font size=15]{antagRole.RoleTitle}[/font]", out _);
+        roleTitleMsg.Pop();
+        roleTitleMsg.Pop();
+        roleControl.RoleTitle.SetMessage(roleTitleMsg);
+
+        var roleDetailsMsg = new FormattedMessage();
+        roleDetailsMsg.PushColor(antagRole.Color);
+        var detailsText = string.IsNullOrWhiteSpace(antagRole.Issuer)
+            ? antagRole.RoleType
+            : $"{antagRole.RoleType} | {antagRole.Issuer}";
+        roleDetailsMsg.TryAddMarkup($"[font size=12]{detailsText}[/font]", out _);
+        roleDetailsMsg.Pop();
+        roleControl.RoleDetails.SetMessage(roleDetailsMsg);
+
+        if (!string.IsNullOrWhiteSpace(antagRole.Briefing))
+        {
+            var msg = new FormattedMessage();
+            msg.PushColor(antagRole.BriefingColor);
+
+            if (antagRole.Bold)
+                msg.PushTag(new MarkupNode("bold", null, null));
+            msg.TryAddMarkup(antagRole.Briefing, out _);
+            if (antagRole.Bold)
+                msg.Pop();
+            msg.Pop();
+
+            var briefingControl = new ObjectiveBriefingControl();
+            briefingControl.Label.SetMessage(msg);
+
+            roleControl.BriefingContainer.AddChild(briefingControl);
+        }
+
+        if (antagRole.Objectives.Count > 0)
+        {
+            var objectivesLabel = new Label
+            {
+                Text = Loc.GetString("character-info-objectives-label"),
+                HorizontalAlignment = Control.HAlignment.Left,
+            };
+            roleControl.ObjectivesContainer.AddChild(objectivesLabel);
+        }
+
+        return roleControl;
     }
 
-    private void UpdateRoleType()
+    // Goobstation: Briefing Improve
+    private void AddObjectivesToRole(CharacterObjectiveControl roleControl, List<ObjectiveInfo> objectives)
     {
-        if (_window == null || !_window.IsOpen)
-            return;
+        foreach (var condition in objectives)
+        {
+            var conditionControl = new ObjectiveConditionsControl();
+            conditionControl.ProgressTexture.Texture = _sprite.Frame0(condition.Icon);
+            conditionControl.ProgressTexture.Progress = condition.Progress;
 
-        if (!_ent.TryGetComponent<MindContainerComponent>(_player.LocalEntity, out var container)
-            || container.Mind is null)
-            return;
+            var titleMsg = new FormattedMessage();
+            titleMsg.AddText(condition.Title);
 
-        if (!_ent.TryGetComponent<MindComponent>(container.Mind.Value, out var mind))
-            return;
+            var descMsg = new FormattedMessage();
+            descMsg.AddText(condition.Description);
 
-        if (!_prototypeManager.TryIndex(mind.RoleType, out var proto))
-            Log.Error($"Player '{_player.LocalSession}' has invalid Role Type '{mind.RoleType}'. Displaying default instead");
+            conditionControl.Title.SetMessage(titleMsg);
+            conditionControl.Description.SetMessage(descMsg);
 
-        _window.RoleType.Text = Loc.GetString(proto?.Name ?? "role-type-crew-aligned-name");
-        _window.RoleType.FontColorOverride = proto?.Color ?? Color.White;
+            roleControl.ObjectivesContainer.AddChild(conditionControl);
+        }
     }
 
     private void CharacterDetached(EntityUid uid)

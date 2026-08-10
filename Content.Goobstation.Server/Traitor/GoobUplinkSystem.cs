@@ -60,9 +60,10 @@ public sealed class GoobUplinkSystem : GoobCommonUplinkSystem
         var code = Comp<RingerUplinkComponent>(ent.Owner).Code;
         if (code != null)
         {
+            var subColor = ev.BriefingSubColor ?? Color.Orange;
             var codeStr = string.Join("-", code).Replace("sharp", "#");
-            ev.BriefingEntry = Loc.GetString("traitor-role-uplink-code", ("code", codeStr));
-            ev.BriefingEntryShort = Loc.GetString("traitor-role-uplink-code-short", ("code", codeStr));
+            ev.BriefingEntry = Loc.GetString("traitor-role-uplink-code", ("code", codeStr), ("subColor", subColor));
+            ev.BriefingEntryShort = Loc.GetString("traitor-role-uplink-code-short", ("code", codeStr), ("subColor", subColor));
         }
 
         ev.Handled = true;

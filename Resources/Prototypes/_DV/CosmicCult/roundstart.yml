@@ -39,5 +39,13 @@
       components:
       - type: CosmicCult
       - type: WeakToHoly # GOOBSTATION
+      # Goobstation: Briefing Improve
+      - type: IntrinsicRadioReceiver
+      - type: CosmicCultAssociatedRule
+      briefing:
+        text: cosmiccult-role-greeting-background
+        color: MediumPurple
+        subColor: BlueViolet
+        sound: "/Audio/_DV/CosmicCult/antag_cosmic_briefing.ogg"
       mindRoles:
       - MindRoleCosmicCult

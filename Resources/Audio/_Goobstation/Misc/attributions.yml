@@ -57,3 +57,8 @@
   license: "CC-BY-4.0"
   copyright: "Recorded by nightcustard, trimmed and converted to mono by XWASHERE (github)"
   source: "https://freesound.org/people/nightcustard/sounds/655404/"
+
+- files: ["dragon_greeting.ogg"]
+  license: "CC-BY-SA-3.0"
+  copyright: "taken on freesoundsite.com"
+  source: "https://freesoundsite.com/sound-collections/dragon-roar-sound-effects/"

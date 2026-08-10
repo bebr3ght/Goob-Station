@@ -7,7 +7,22 @@
 - type: antag
   id: CorporateAgent
   name: roles-antag-corporate-agent-name
+  nameColor: '#009100'
   antagonist: true
   setPreference: true
   objective: roles-antag-corporate-agent-description
+  issuers:
+  - objective-issuer-nanotrasen
+  - objective-issuer-nanotrasen-central-command
   guides: [ CorporateAgents ]
+
+- type: entity
+  parent: BaseMindRoleAntag
+  id: MindRoleCorporateAgent
+  name: Corporate Agent Role
+  components:
+  - type: MindRole
+    antagPrototype: CorporateAgent
+    exclusiveAntag: true
+    subtype: role-subtype-traitor
+  - type: TraitorRole

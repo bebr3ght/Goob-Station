@@ -49,6 +49,20 @@ public sealed partial class AntagPrototype : IPrototype
     public string Objective { get; private set; } = "";
 
     /// <summary>
+    /// Goobstation: Briefing Improve
+    /// Must have issuer from objectives, necessary for grouping and displaying in Character Menu
+    /// </summary>
+    [DataField]
+    public List<string> Issuers { get; private set; } = new();
+
+    /// <summary>
+    /// Goobstation: Briefing Improve
+    /// Changes the color of RoleTitle in the Character Menu
+    /// </summary>
+    [DataField]
+    public Color? NameColor { get; private set; }
+
+    /// <summary>
     ///     Whether or not the antag role is one of the bad guys.
     /// </summary>
     [DataField("antagonist")]

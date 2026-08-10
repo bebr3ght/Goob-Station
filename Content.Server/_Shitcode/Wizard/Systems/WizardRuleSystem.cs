@@ -69,7 +69,6 @@ public sealed class WizardRuleSystem : GameRuleSystem<WizardRuleComponent>
 
         SubscribeLocalEvent<WizardRuleComponent, AfterAntagEntitySelectedEvent>(OnAfterAntagSelected);
 
-        SubscribeLocalEvent<WizardRoleComponent, GetBriefingEvent>(OnWizardGetBriefing);
         SubscribeLocalEvent<ApprenticeRoleComponent, GetBriefingEvent>(OnApprenticeGetBriefing);
 
         SubscribeLocalEvent<WizardComponent, MobStateChangedEvent>(OnStateChanged);
@@ -271,11 +270,6 @@ public sealed class WizardRuleSystem : GameRuleSystem<WizardRuleComponent>
         component.TargetStation = _random.Pick(stations);
     }
 
-    private void OnWizardGetBriefing(Entity<WizardRoleComponent> ent, ref GetBriefingEvent args)
-    {
-        args.Append(Loc.GetString("wizard-role-briefing"));
-    }
-
     private void OnApprenticeGetBriefing(Entity<ApprenticeRoleComponent> ent, ref GetBriefingEvent args)
     {
         args.Append(Loc.GetString("apprentice-role-briefing"));
@@ -283,22 +277,24 @@ public sealed class WizardRuleSystem : GameRuleSystem<WizardRuleComponent>
 
     private void OnAfterAntagSelected(Entity<WizardRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        MakeWizard(args.EntityUid, ent.Comp);
-    }
+        var entUid = args.EntityUid;
+        var station = (ent.Comp.TargetStation is not null) ? Name(ent.Comp.TargetStation.Value) : "the station";
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+        var greeting = args.Def.Briefing?.Text ?? Loc.GetString("wizard-role-greeting", ("station", station), ("subColor", subColor));
+        var briefing = Loc.GetString("wizard-role-briefing", ("subColor", subColor));
 
-    public bool MakeWizard(EntityUid target, WizardRuleComponent rule)
-    {
-        var station = (rule.TargetStation is not null) ? Name(rule.TargetStation.Value) : "the station";
+        if (!_mind.TryGetMind(entUid, out var mindId, out _) ||
+            !_role.MindHasRole<WizardRoleComponent>(mindId, out var wizardRole))
+            return;
+        _antag.SendBriefing(entUid, greeting, args.Def.Briefing?.Color, args.Def.Briefing?.Sound);
+        _antag.AddCharacterBriefing(wizardRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
 
-        _antag.SendBriefing(target, Loc.GetString("wizard-role-greeting", ("station", station)), Color.Cyan, null);
-
-        if (!TryComp(target, out HumanoidAppearanceComponent? humanoid) || humanoid.Age >= 60)
-            return true;
+        if (!TryComp(entUid, out HumanoidAppearanceComponent? humanoid) || humanoid.Age >= 60)
+            return;
 
         // Wizards are old
         humanoid.Age = _random.Next(60, 121);
-        Dirty(target, humanoid);
-
-        return true;
+        Dirty(entUid, humanoid);
     }
 }

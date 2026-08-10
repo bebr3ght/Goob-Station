@@ -50,6 +50,7 @@
       briefing:
         text: abductor-role-greeting
         color: Green
+        subColor: MediumSeaGreen # Goobstation: Briefing Improve
         sound: /Audio/_Shitmed/Misc/abductor.ogg
       components:
       - type: Abductor
@@ -150,6 +151,7 @@
       briefing:
         text: abductor-role-greeting
         color: Green
+        subColor: MediumSeaGreen # Goobstation: Briefing Improve
         sound: /Audio/_Shitmed/Misc/abductor.ogg
       components:
       - type: Abductor
@@ -201,6 +203,7 @@
       briefing:
         text: abductor-role-greeting
         color: Green
+        subColor: MediumSeaGreen # Goobstation: Briefing Improve
         sound: /Audio/_Shitmed/Misc/abductor.ogg
       components:
       - type: Abductor

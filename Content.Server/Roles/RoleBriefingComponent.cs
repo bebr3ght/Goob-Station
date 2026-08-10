@@ -10,6 +10,7 @@ using Content.Shared.Roles;
 
 namespace Content.Server.Roles;
 
+// Goobstation: Briefing Improve - added BriefingColor, BriefingSubColor & Bold
 /// <summary>
 /// Adds a briefing to the character info menu, does nothing else.
 /// </summary>
@@ -18,4 +19,13 @@ public sealed partial class RoleBriefingComponent : BaseMindRoleComponent
 {
     [DataField]
     public string Briefing;
+
+    [DataField]
+    public Color? BriefingColor;
+
+    [DataField]
+    public Color? BriefingSubColor;
+
+    [DataField]
+    public bool Bold;
 }

@@ -353,8 +353,41 @@ public sealed class CosmicCultRuleSystem : GameRuleSystem<CosmicCultRuleComponen
         };
     }
 
-    private void OnAntagSelect(Entity<CosmicCultRuleComponent> uid, ref AfterAntagEntitySelectedEvent args) =>
-        TryStartCult(args.EntityUid, uid);
+    // Goobstation: Briefing Improve - add Character Briefing assign, color, subColor & bold. Move TryStartCult logic
+    private void OnAntagSelect(Entity<CosmicCultRuleComponent> uid, ref AfterAntagEntitySelectedEvent args)
+    {
+        var entUid = args.EntityUid;
+        var subColor = args.Def.Briefing?.SubColor ?? args.Def.Briefing?.Color ?? Color.Orange;
+        var bold = args.Def.Briefing?.CharacterBriefingBold ?? false;
+        var greeting = Loc.GetString("cosmiccult-role-greeting", ("subColor", subColor));
+        var briefing = Loc.GetString("cosmiccult-role-briefing", ("subColor", subColor));
+
+        if (!_mind.TryGetMind(entUid, out var mindId, out var mind) ||
+            !_role.MindHasRole<CosmicCultRoleComponent>(mindId, out var cosmicCultRole))
+            return;
+        _antag.SendBriefing(entUid, greeting, args.Def.Briefing?.Color, null);
+        _antag.AddCharacterBriefing(cosmicCultRole.Value.Owner, briefing, args.Def.Briefing?.Color, bold, subColor);
+
+        var transmitter = EnsureComp<IntrinsicRadioTransmitterComponent>(uid);
+        var radio = EnsureComp<ActiveRadioComponent>(uid);
+        radio.Channels.Add("CosmicRadio");
+        transmitter.Channels.Add("CosmicRadio");
+
+        if (_player.TryGetSessionById(mind.UserId, out var session))
+        {
+            _euiMan.OpenEui(new CosmicRoundStartEui(), session);
+        }
+
+        uid.Comp.TotalCult++;
+
+        if (!TryComp<CosmicCultComponent>(entUid, out var cultComp) ||
+            !TryComp<CosmicCultAssociatedRuleComponent>(entUid, out var associatedComp))
+            return;
+        cultComp.StoredDamageContainer = Comp<DamageableComponent>(entUid).DamageContainerID!.Value; // nullable?
+        associatedComp.CultGamerule = entUid;
+        Dirty(entUid, cultComp);
+        uid.Comp.Cultists.Add(entUid);
+    }
 
     private void OnAddedCultist(Entity<CosmicCultRuleComponent> uid, ref CosmicCultAddedCultistEvent args)
     {
@@ -633,47 +666,6 @@ public sealed class CosmicCultRuleSystem : GameRuleSystem<CosmicCultRuleComponen
 
 
     #region De- & Conversion
-    public void TryStartCult(EntityUid uid, Entity<CosmicCultRuleComponent> rule)
-    {
-        if (!_mind.TryGetMind(uid, out var mindId, out var mind))
-            return;
-
-        EnsureComp<CosmicCultComponent>(uid, out var cultComp);
-        EnsureComp<IntrinsicRadioReceiverComponent>(uid);
-        EnsureComp<CosmicCultAssociatedRuleComponent>(uid, out var associatedComp);
-
-        associatedComp.CultGamerule = rule;
-
-        _role.MindAddRole(mindId, "MindRoleCosmicCult", mind, true);
-        _role.MindHasRole<CosmicCultRoleComponent>(mindId, out var cosmicRole);
-
-        if (cosmicRole is not null)
-        {
-            EnsureComp<RoleBriefingComponent>(cosmicRole.Value.Owner);
-            Comp<RoleBriefingComponent>(cosmicRole.Value.Owner).Briefing = Loc.GetString("objective-cosmiccult-charactermenu");
-        }
-
-        _antag.SendBriefing(uid, Loc.GetString("cosmiccult-role-roundstart-fluff"), Color.FromHex("#4cabb3"), _briefingSound);
-        _antag.SendBriefing(uid, Loc.GetString("cosmiccult-role-short-briefing"), Color.FromHex("#cae8e8"), null);
-
-        var transmitter = EnsureComp<IntrinsicRadioTransmitterComponent>(uid);
-        var radio = EnsureComp<ActiveRadioComponent>(uid);
-        radio.Channels.Add("CosmicRadio");
-        transmitter.Channels.Add("CosmicRadio");
-
-        if (_player.TryGetSessionById(mind.UserId, out var session))
-        {
-            _euiMan.OpenEui(new CosmicRoundStartEui(), session);
-        }
-
-        rule.Comp.TotalCult++;
-
-        cultComp.StoredDamageContainer = Comp<DamageableComponent>(uid).DamageContainerID!.Value; // nullable?
-
-        Dirty(uid, cultComp);
-
-        rule.Comp.Cultists.Add(uid);
-    }
 
     private void OnAssociateRule(ref CosmicCultAssociateRuleEvent args)
     {

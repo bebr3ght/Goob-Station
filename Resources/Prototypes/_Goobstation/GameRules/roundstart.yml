@@ -74,6 +74,25 @@
       lateJoinAdditional: true
       mindRoles:
       - MindRoleChangeling
+      components:
+      - type: ChangelingIdentity
+      - type: Changeling
+      - type: NpcFactionMember
+        factions:
+        - Changeling
+      - type: Store
+        categories:
+        - ChangelingAbilityCombat
+        - ChangelingAbilitySting
+        - ChangelingAbilityUtility
+        currencyWhitelist:
+        - EvolutionPoint
+        balance:
+          EvolutionPoint: 16
+      briefing:
+        color: LemonChiffon
+        subColor: DarkKhaki
+        sound: /Audio/_Goobstation/Ambience/Antag/changeling_start.ogg
   - type: Tag
     tags:
       - RoundstartAntag
@@ -95,7 +114,7 @@
       max: 665 # Delay is so the heads help their department get set up.
   - type: AntagSelection
     definitions:
-    - prefRoles: [ Traitor ]
+    - prefRoles: [ CorporateAgent ]
       max: 2
       playerRatio: 25
       chaosScore: 300
@@ -107,8 +126,11 @@
         components:
         - Condemned # Stops the NTR from rolling it
       lateJoinAdditional: true
+      briefing:
+        color: Honeydew
+        subColor: LimeGreen
       mindRoles:
-      - MindRoleTraitor
+      - MindRoleCorporateAgent
 
 - type: entity
   parent: BaseTraitorRule
@@ -130,6 +152,8 @@
       lateJoinAdditional: true
       mindRoles:
       - MindRoleTraitor
+      briefing:
+        subColor: Crimson
   - type: Tag
     tags:
       - CalmAntag
@@ -185,6 +209,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeopsCommander
+      briefing:
+        subColor: Crimson
     - prefRoles: [ NukeopsMedic ]
       fallbackRoles: [ Nukeops, NukeopsCommander ]
       spawnerPrototype: SpawnPointNukeopsMedic
@@ -204,6 +230,8 @@
         speedModifier: 2
       mindRoles:
       - MindRoleNukeopsMedic
+      briefing:
+        subColor: Crimson
     - prefRoles: [ Nukeops ]
       fallbackRoles: [ NukeopsCommander, NukeopsMedic ]
       spawnerPrototype: SpawnPointNukeopsOperative
@@ -222,6 +250,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeops
+      briefing:
+        subColor: Crimson
   - type: Tag
     tags:
       - CalmAntag
@@ -245,6 +275,7 @@
       briefing:
         text: head-rev-role-greeting
         color: CornflowerBlue
+        subColor: AntiqueWhite
         sound: "/Audio/Ambience/Antag/headrev_start.ogg"
       startingGear: HeadRevGear
       components:
@@ -287,6 +318,7 @@
       briefing:
         text: blob-carrier-role-greeting
         color: Plum
+        subColor: Thistle
         sound: /Audio/Announcements/bloblarm.ogg
       mindRoles:
       - MindRoleBlob
@@ -349,6 +381,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeopsCommander
+      briefing:
+        subColor: Crimson
     - prefRoles: [ NukeopsMedic ]
       fallbackRoles: [ Nukeops, NukeopsCommander ]
       spawnerPrototype: SpawnPointNukeopsMedic
@@ -369,6 +403,8 @@
         speedModifier: 2
       mindRoles:
       - MindRoleNukeopsMedic
+      briefing:
+        subColor: Crimson
     - prefRoles: [ Nukeops ]
       fallbackRoles: [ NukeopsCommander, NukeopsMedic ]
       spawnerPrototype: SpawnPointNukeopsOperative
@@ -389,6 +425,8 @@
         - Syndicate
       mindRoles:
       - MindRoleNukeops
+      briefing:
+        subColor: Crimson
 
 - type: entity
   parent: BaseGameRule
@@ -413,6 +451,10 @@
       mindRoles:
       - DevilMindRole
       startingGear: DevilStartingGear
+      briefing:
+        color: IndianRed
+        subColor: Salmon
+        sound: "/Audio/_Goobstation/Ambience/Antag/devil_start.ogg"
   - type: Tag
     tags:
     - RoundstartAntag

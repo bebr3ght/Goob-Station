@@ -482,6 +482,7 @@
       briefing:
         text: slasher-role-greeting
         color: Red
+        subColor: Crimson # Goobstation: Briefing Improve
         sound: /Audio/_Goobstation/Effects/Slasher/SlasherIntro.ogg
       mindRoles:
       - MindRoleSlasher
@@ -585,6 +586,7 @@
       briefing:
         text: contractor-role-greeting
         color: Red
+        subColor: DarkRed # Goobstation: Briefing Improve
         sound: /Audio/Ambience/Antag/traitor_wawa.ogg
       components:
       - type: RandomMetadata

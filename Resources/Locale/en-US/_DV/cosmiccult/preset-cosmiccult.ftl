@@ -73,17 +73,22 @@ cosmiccult-elimination-announcement = Based on scans from our long-range sensors
 
 ## BRIEFINGS
 
-cosmiccult-role-roundstart-fluff =
-    As you ready yourself for yet another shift aboard yet another NanoTrasen station, untold knowledge suddenly floods your mind!
-    A revelation beyond compare. An end to cyclic, sisyphean suffering.
-    A gentle curtain call.
+cosmiccult-role-greeting-background =
+    You're here [color={$subColor}]again[/color]. [color={$subColor}]Same[/color] station. [color={$subColor}]Same[/color] routine.
+    And in this moment — [color={$subColor}]a strike[/color]. Knowledge [color={$subColor}]overflows[/color] the edges.
+    You [color={$subColor}]see[/color] the [color={$subColor}]way out[/color]. [color={$subColor}]The end[/color] to [color={$subColor}]an endless loop[/color].
+    Someone is [color={$subColor}]calling[/color] you quietly from the stage.
 
-    All you need do is usher it in.
+    Just [color={$subColor}]open[/color] the door.
 
-cosmiccult-role-short-briefing =
-    You are a Cosmic Cultist!
-    Your objectives are listed in the character menu.
-    Read more about your role in the guidebook entry.
+cosmiccult-role-greeting =
+    You are a [color={$subColor}]Cosmic Cultist[/color]! [italic]
+    Your [color={$subColor}]objectives[/color] are listed in the [color={$subColor}]character menu[/color].
+    Read more about your role in the [color={$subColor}]guidebook entry[/color].[/italic]
+
+cosmiccult-role-briefing =
+    You are a [color={$subColor}]Cosmic Cultist[/color]! [italic]
+    Read more about your role in the [color={$subColor}]guidebook entry[/color].[/italic]
 
 cosmiccult-role-conversion-fluff =
     As the invocation completes, untold knowledge suddenly floods your mind!

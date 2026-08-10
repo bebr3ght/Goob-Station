@@ -97,9 +97,12 @@
 - type: antag
   id: Nukeops
   name: roles-antag-nuclear-operative-name
+  nameColor: Crimson # Goobstation: Briefing Improve
   antagonist: true
   setPreference: true
   objective: roles-antag-nuclear-operative-objective
+  issuers:
+  - objective-issuer-syndicate # Goobstation: Briefing Improve
   requirements:
   - !type:OverallPlaytimeRequirement
     time: 36000 # 10 hours - Goobstation
@@ -115,9 +118,12 @@
 - type: antag
   id: NukeopsMedic
   name: roles-antag-nuclear-operative-agent-name
+  nameColor: Crimson # Goobstation: Briefing Improve
   antagonist: true
   setPreference: true
   objective: roles-antag-nuclear-operative-agent-objective
+  issuers:
+  - objective-issuer-syndicate v
   requirements:
   - !type:OverallPlaytimeRequirement
     time: 90000 # 25 hours - Goobstation
@@ -136,9 +142,12 @@
 - type: antag
   id: NukeopsCommander
   name: roles-antag-nuclear-operative-commander-name
+  nameColor: Crimson # Goobstation: Briefing Improve
   antagonist: true
   setPreference: true
   objective: roles-antag-nuclear-operative-commander-objective
+  issuers:
+  - objective-issuer-syndicate # Goobstation: Briefing Improve
   requirements:
   - !type:OverallPlaytimeRequirement
     time: 90000 # 25 hours - Goobstation

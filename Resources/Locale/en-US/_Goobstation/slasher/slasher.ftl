@@ -1,4 +1,7 @@
-slasher-role-greeting = You feel an unstoppable urge for vengeance... and synth music. The night is young, the fog is thick, and your machete gleams in the neon starlight. Time to show these spacemen why you're the legend of the midnight massacre!
+slasher-role-greeting =
+    You feel an [color={$subColor}]unstoppable[/color] urge for vengeance... and synth music.
+    The night is young, the fog is thick, and your machete gleams in the neon starlight.
+    Time to show these spacemen why you're the [color={$subColor}]legend of the midnight massacre[/color]!
 
 ghost-role-information-slasher-name = Slasher
 ghost-role-information-slasher-description = Slaughter and terrorize the living as the Slasher!

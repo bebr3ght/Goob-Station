@@ -4,6 +4,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Content.Server._Shitcode.GameTicking.Rules.Components;
 using Content.Server._Shitmed.Objectives.Components;
 using Content.Server.Administration.Logs;
 using Content.Server.Antag;

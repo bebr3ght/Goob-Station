@@ -1,0 +1,17 @@
+{
+    "version": 1,
+    "license": "CC-BY-SA-3.0",
+    "copyright": "",
+    "size": {
+        "x": 9,
+        "y": 9
+    },
+    "states": [
+        {
+            "name": "owner"
+        },
+		{
+            "name": "familiar"
+        }
+    ]
+}

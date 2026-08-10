@@ -20,12 +20,6 @@ public sealed class CharacterRelationGroupSystem : EntitySystem
             if (otherUid == uid || otherComp.Group != comp.Group || otherComp.RelationType == CharacterRelationType.None)
                 continue;
 
-            if (comp.TeamUid != null || otherComp.TeamUid != null)
-            {
-                if (comp.TeamUid != otherComp.TeamUid)
-                    continue;
-            }
-
             var displayedRelation = otherComp.RelationType;
             if (comp.RelationType == CharacterRelationType.Owner && otherComp.RelationType == CharacterRelationType.Owner)
                 continue;

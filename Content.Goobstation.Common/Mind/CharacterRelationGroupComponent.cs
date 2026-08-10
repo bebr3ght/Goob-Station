@@ -10,26 +10,23 @@ public sealed partial class CharacterRelationGroupComponent : Component
     /// <summary>
     /// Имя группы (например, "Abductor" или "NukeOps"). Сущности с одинаковой группой увидят друг друга в меню.
     /// </summary>
-    [DataField(required: true)]
+    [DataField("group", required: true)]
     public ProtoId<CharacterRelationGroupPrototype>? Group = "";
 
     /// <summary>
     /// Локализованный титул в группе (например, "abductor-role-scientist" -> "Учёный").
     /// </summary>
-    [DataField]
+    [DataField("title")]
     public LocId? Title;
 
     /// <summary>
     /// Тип связи (по умолчанию - Коллега).
     /// </summary>
-    [DataField]
+    [DataField("relationType")]
     public CharacterRelationType RelationType = CharacterRelationType.Colleague;
 
-    [DataField]
+    [DataField("factionIcon")]
     public string? FactionIcon;
-
-    [DataField]
-    public EntityUid? TeamUid;
 }
 
 [Serializable, NetSerializable]

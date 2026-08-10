@@ -2,7 +2,7 @@ using Robust.Shared.GameStates;
 
 namespace Content.Goobstation.Common.Mind;
 
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[RegisterComponent, NetworkedComponent]
 public sealed partial class HasOwnersComponent : Component
 {
     /// <summary>
@@ -14,9 +14,18 @@ public sealed partial class HasOwnersComponent : Component
     /// <summary>
     /// The mob this familiar attached to.
     /// </summary>
-    [DataField, AutoNetworkedField]
-    public List<NetEntity> OwnersMob = new();
+    [DataField]
+    public List<EntityUid> OwnersMob = new();
+
+    /// <summary>
+    /// If true, familiar will delete when SpawnedFromItem disappear; SpawnedFromItem item will be able to spawn familiar again.
+    /// </summary>
+    [DataField]
+    public bool HandleOwnerItem;
 
     [DataField]
-    public string StatusIcon = "FamiliarIcon";
+    public bool RandomizeOwner;
+
+    [DataField]
+    public List<EntityUid> PossibleOwners = new();
 }
